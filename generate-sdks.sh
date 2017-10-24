@@ -11,4 +11,3 @@ do
        -o $DIR/../aces-encoded-listener-api/sdks/$LANGUAGE/
 done
 
-
