@@ -8,6 +8,7 @@ do
 	java -jar $DIR/../aces-swagger-codegen/modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate \
        -i $DIR/../aces-encoded-listener-api/aces-encoded-listener-api-swagger.yaml \
        -l $LANGUAGE \
-       -o $DIR/../aces-encoded-listener-api/sdks/$LANGUAGE/
+       -o $DIR/../aces-encoded-listener-api/sdks/$LANGUAGE/ \
+       -c $DIR/sdk-configs/$LANGUAGE.json
 done
 
