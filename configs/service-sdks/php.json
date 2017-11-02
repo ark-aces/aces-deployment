@@ -1,0 +1,8 @@
+{
+  "apiPackage": "ArkAces\\ServiceClient",
+  "artifactVersion": "0.1.0",
+  "composerVendorName": "ark-aces",
+  "composerProjectName": "aces-service-api",
+  "variableNamingConvention": "camelCase",
+  "invokerPackage": "ArkAces\\ServiceClient"
+}

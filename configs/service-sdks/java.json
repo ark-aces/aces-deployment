@@ -1,0 +1,12 @@
+{
+  "apiPackage":"ArkAces/ServiceClient",
+  "packageVersion":"0.1.0",
+  "groupId": "io.arkaces",
+  "artifactId": "service-client",
+  "licenseName": "MIT License",
+  "licenseUrl": "https://github.com/ark-aces/aces-service-api/blob/master/LICENSE",
+  "hideGenerationTimestamp": "true",
+  "developerOrganization": "Ark ACES",
+  "developerOrganizationUrl": "https://aces-ark.io/",
+  "bigDecimalAsString": true
+}
