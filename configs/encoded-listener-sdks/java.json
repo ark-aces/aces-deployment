@@ -1,5 +1,5 @@
 {
-  "apiPackage":"ArkAces/EncodedListenerClient",
+  "apiPackage":"io.arkaces.encoded_listener_client",
   "packageVersion":"0.1.0",
   "groupId": "io.arkaces",
   "artifactId": "encoded-listener-client",
