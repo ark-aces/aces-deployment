@@ -1,0 +1,69 @@
+---
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2
+    - nginx
+
+- name: ensure database is created
+  postgresql_db: name={{database_name}}
+  become: yes
+  become_user: postgres
+
+- name: ensure user has access to database
+  postgresql_user: db={{database_name}} name={{database_user}} password={{database_password}} priv=ALL
+  become: yes
+  become_user: postgres
+
+- name: Ensures /etc/opt/aces-arka-arkb-channel-service/ dir exists
+  file: path=/etc/opt/aces-arka-arkb-channel-service state=directory
+
+- name: Install arka network config
+  copy:
+    src: ark-configs/ark-mainnet.yml
+    dest: /etc/opt/aces-arka-arkb-channel-service/arka-network.yml
+    
+- name: Install arkb network config
+  copy:
+    src: ark-configs/ark-devnet.yml
+    dest: /etc/opt/aces-arka-arkb-channel-service/arkb-network.yml
+    
+- name: Install arka network config
+  template:
+    src: aces-arka-arkb-channel-service/application.yml.j2
+    dest: /etc/opt/aces-arka-arkb-channel-service/application.yml
+  
+- name: Ensures /opt/aces-arka-arkb-channel-service/src dir exists
+  file: path=/opt/aces-arka-arkb-channel-service/src state=directory
+  
+- name: Clone Aces Arka-Arkb channel service repository into /opt
+  git:
+    repo: https://github.com/ark-aces/aces-arka-arkb-channel-service.git
+    version: master
+    dest: /opt/aces-arka-arkb-channel-service/src/
+    
+- name: Ensures /opt/aces-arka-arkb-channel-service/bin dir exists
+  file: path=/opt/aces-arka-arkb-channel-service/bin state=directory
+
+- name: Build Aces Arka-Arkb Channel Service application jar
+  shell: |
+    /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
+    find ./target -name "*.jar" -exec cp {} /opt/aces-arka-arkb-channel-service/bin/aces-arka-arkb-channel-service.jar \;
+  args:
+    chdir: /opt/aces-arka-arkb-channel-service/src/
+
+- name: Install aces-arka-arkb-channel-service service
+  copy:
+    src: systemd/aces-arka-arkb-channel-service.service
+    dest: /etc/systemd/system/aces-arka-arkb-channel-service.service
+
+- name: Open aces-arka-arkb-channel-service port
+  shell: ufw allow {{port}} 
+
+- name: Start aces-arka-arkb-channel-service service
+  systemd: state=started name=aces-arka-arkb-channel-service daemon_reload=yes enabled=yes

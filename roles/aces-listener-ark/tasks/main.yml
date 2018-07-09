@@ -1,0 +1,41 @@
+---
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+
+- name: Ensures /etc/opt/aces-listener-ark/ dir exists
+  file: path=/etc/opt/aces-listener-ark state=directory
+
+- name: Install ark network config
+  copy:
+    src: aces-listener-ark/ark-mainnet.yml
+    dest: /etc/opt/aces-listener-ark/ark-network.yml
+    
+- name: Install ark listener application config
+  template:
+    src: aces-listener-ark/application.yml
+    dest: /etc/opt/aces-listener-ark/application.yml
+  
+- name: Ensures /opt/aces-listener-ark/src dir exists
+  file: path=/opt/aces-listener-ark/src state=directory
+  
+- name: Clone Aces Listener Ark repository into /opt
+  git:
+    repo: https://github.com/ark-aces/aces-listener-ark.git
+    version: master
+    dest: /opt/aces-listener-ark/src/
+    
+- name: Ensures /opt/aces-listener-ark/bin dir exists
+  file: path=/opt/aces-listener-ark/bin state=directory
+
+- name: Build Aces Listener Ark application jar
+  shell: |
+    /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
+    find ./target -name "*.jar" -exec cp {} /opt/aces-listener-ark/bin/aces-listener-ark.jar \;
+  args:
+    chdir: /opt/aces-listener-ark/src/
+
+- name: Install aces-listener-ark service
+  copy: src=systemd/aces-listener-ark.service dest=/etc/systemd/system/aces-listener-ark.service
+
+- name: Start aces-listener-ark service
+  systemd: state=started name=aces-listener-ark daemon_reload=yes enabled=yes

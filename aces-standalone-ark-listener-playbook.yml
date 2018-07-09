@@ -1,0 +1,26 @@
+---
+- hosts: aces-node
+  sudo: true
+  vars:
+     database_name: aces_arka_arkb_channel_db
+     database_user: aces_arka_arkb_channel_user
+     database_password: change_me
+  roles:
+     - role: ansiblebit.oracle-java
+       oracle_java_set_as_default: yes
+     - role: tecris.maven
+       maven_major: 3
+       maven_version: 3.5.4
+       
+     - role: aces-listener-ark
+       domain: localhost
+       port: 9091
+       
+    - role: aces-listener-ark
+      domain: aces-listener-ark.example.com
+      app_port: 9091
+       
+#     - role: aces-arka-arkb-channel-service
+#       database_name: aces-arka-arkb-channel-service
+#       database_user: database_user
+#       database_password: database_password

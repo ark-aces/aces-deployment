@@ -1,0 +1,98 @@
+serverInfo:
+  name: "Aces ARK MainNet to ARK DevNet Channel Service"
+  description: "ACES ARK MainNet to ARK DevNet Channel service for value transfers"
+  instructions: >
+    After this contract is executed, any ARK sent to depositArkaAddress will be exchanged for DARK and
+    sent directly to the given recipientArkbAddress with no additional fees. 1 ARK = 100 DARK
+  version: "1.1.0"
+  websiteUrl: "https://arkaces.com"
+  arkbPerArka: "100"
+  inputSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "recipientArkbAddress": {
+          "type": "string",
+          "title": "Recipient DARK Address (Ark DevNet)",
+          "description": "Enter the DARK (Ark DevNet) address to receive transfers."
+        }
+      },
+      "required": [
+        "recipientArkbAddress"
+      ]
+    }
+  outputSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "depositArkaAddress": {
+          "type": "string"
+        },
+        "recipientArkbAddress": {
+          "type": "string"
+        },
+        "transfers": {
+          "type": "array",
+          "properties": {
+            "arkAmount": {
+              "type": "string"
+            },
+            "arkbPerArka": {
+              "type": "string"
+            },
+            "arkaFlatFee": {
+              "type": "string"
+            },
+            "arkaPercentFee": {
+              "type": "string"
+            },
+            "arkaTotalFee": {
+              "type": "string"
+            },
+            "arkbSendAmount": {
+              "type": "string"
+            },
+            "arkbTransactionId": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+
+spring:
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://localhost:5432/{{database_name}}"
+    username: "{{database_user}}"
+    password: "{{database_password}}"
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+
+arkaNetworkConfigPath: "file:/etc/opt/aces-arka-arkb-channel-service/arka-network.yml"
+arkbNetworkConfigPath: "file:/etc/opt/aces-arka-arkb-channel-service/arkb-network.yml"
+
+arkaUnit: "ARK"
+arkbUnit: "DARK"
+
+fees:
+  arkaFlatFee: 0
+  arkaPercentFee: 0
+
+arkbPerArka: 100
+
+server:
+  port: 9191
+
+arkaListener:
+  url: http://localhost:9091
+
+arkaEventCallbackUrl: http://localhost:9191/arkaEvents
+
+serviceArkbAccount:
+  address: change-me
+  passphrase: change-me

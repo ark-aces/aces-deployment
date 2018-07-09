@@ -1,0 +1,27 @@
+serverInfo:
+  name: "AcesListenerArk"
+  description: "ACES Listener implementation for Ark"
+  version: "1.0.0"
+  websiteUrl: "https://arkaces.com"
+
+arkNetworkConfigPath: "file:/etc/opt/aces-listener-ark/ark-network.yml"
+
+spring:
+  datasource:
+    url: "jdbc:h2:/tmp/aces-listener-ark.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+    driver-class-name: "org.h2.Driver"
+  jpa:
+    hibernate:
+      ddl-auto: "create-drop"
+
+scanTransactionDepth: 500
+
+server:
+  port: {{port}}
+
+arkAuth:
+  requireAuth: false
+
+logging:
+  level:
+    com.arkaces.aces_listener_ark.ArkEventListener: ERROR
