@@ -8,6 +8,12 @@
     - nginx
     - letsencrypt
     - ssl-cert
+    
+- name: "Add domain {{ domain_name }} to /etc/hosts"
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 {{ domain_name }}"
+    state: present
 
 - name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
   file:

@@ -1,0 +1,39 @@
+---
+- hosts: aces-node
+  sudo: true
+  roles:
+  - role: aces-common
+  
+  - role: aces-listener-ark
+    vars:
+      domain_name: aces-listener-ark.example.com
+      app_port: 9091
+      app_service_name: aces-listener-ark
+      ark_network_config_file: ./configs/ark-networks/ark-mainnet.yml
+      
+  - role: aces-listener-ark
+    vars:
+      domain_name: aces-listener-dark.example.com
+      app_port: 9092
+      app_service_name: aces-listener-dark
+      ark_network_config_file: ./configs/ark-networks/ark-devnet.yml
+      
+  - role: aces-arka-arkb-channel-service
+    vars:
+      domain_name: aces-ark-dark-channel-service.example.com
+      app_port: 9191
+      app_service_name: aces-ark-dark-channel-service
+      arka_listener_url: http://localhost:9091
+      database_name: aces_ark_dark_channel_service_db
+      database_user: aces_ark_dark_channel_service_user
+      database_password: change_me
+
+  - role: aces-arka-arkb-channel-service
+    vars:
+      domain_name: aces-dark-ark-channel-service.example.com
+      app_port: 9192
+      app_service_name: aces-dark-ark-channel-service
+      arkb_listener_url: http://localhost:9092
+      database_name: aces_dark_ark_channel_service_db
+      database_user: aces_dark_ark_channel_service_user
+      database_password: change_me

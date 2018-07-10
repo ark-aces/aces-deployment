@@ -1,0 +1,12 @@
+---
+- hosts: aces-node
+  sudo: true
+  roles:
+  - role: aces-common
+  
+  - role: aces-listener-ark
+    vars:
+      domain_name: aces-listener-ark.example.com
+      app_port: 9091
+      ark_network_config_file: ./configs/ark-networks/ark-mainnet.yml
+      app_service_name: aces-listener-ark

@@ -1,7 +1,7 @@
 ---
-domain_name: localhost
 app_port: 9091
-expose_port: true
+expose_port: false
+domain_name: aces-listener-ark.example.com
 use_letsencrypt: false
 letsencrypt_email: change_me
 ark_network_config_file: configs/ark-mainnet.yml
