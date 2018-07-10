@@ -1,2 +1,3 @@
-.vagrant
-*.retry
+/.vagrant/
+/*.retry
+/*.log

@@ -44,7 +44,7 @@ ansible-playbook --verbose \
 ./{{playbook}}.yml
 ```
 
-
+Example:
 
 ```
 ansible-playbook --verbose \
