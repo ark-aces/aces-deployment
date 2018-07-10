@@ -6,13 +6,13 @@
      database_user: aces_marketplace_user
      database_password: change_me
   roles:
-  - role: ansiblebit.oracle-java
-    oracle_java_set_as_default: yes
-  - role: tecris.maven
-    maven_major: 3
-    maven_version: 3.5.4
-       
-  - role: aces-marketplace
-    database_name: database_name
-    database_user: database_user
-    database_password: database_password
+    - role: ansiblebit.oracle-java
+      oracle_java_set_as_default: yes
+    - role: tecris.maven
+      maven_major: 3
+      maven_version: 3.5.4
+         
+    - role: aces-marketplace
+      database_name: database_name
+      database_user: database_user
+      database_password: database_password

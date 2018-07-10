@@ -1,0 +1,8 @@
+---
+dependencies:
+- role: ansiblebit.oracle-java
+  oracle_java_set_as_default: yes
+  
+- role: tecris.maven
+  maven_major: 3
+  maven_version: 3.5.4

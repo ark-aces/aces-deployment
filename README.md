@@ -45,3 +45,12 @@ ansible-playbook --verbose \
 ```
 
 
+
+```
+ansible-playbook --verbose \
+-u ubuntu \
+--private-key=./.vagrant/machines/aces-service-node-1/virtualbox/private_key \
+-i ./inventory \
+./aces-standalone-ark-listener-playbook.yml
+
+```

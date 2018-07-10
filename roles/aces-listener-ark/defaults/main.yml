@@ -1,1 +1,11 @@
+---
+domain_name: localhost
 app_port: 9091
+expose_port: true
+use_letsencrypt: false
+letsencrypt_email: change_me
+ark_network_config_file: configs/ark-mainnet.yml
+app_service_name: aces-listener-ark
+app_name: ACES Ark Listener
+app_description: ACES Listener implementation for Ark
+app_website_url: https://arkaces.com

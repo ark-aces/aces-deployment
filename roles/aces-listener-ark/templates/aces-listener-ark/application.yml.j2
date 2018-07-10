@@ -1,10 +1,10 @@
 serverInfo:
-  name: "AcesListenerArk"
-  description: "ACES Listener implementation for Ark"
+  name: "{{ app_name }}"
+  description: "{{ app_description }}"
   version: "1.0.0"
-  websiteUrl: "https://arkaces.com"
+  websiteUrl: "{{ app_website_url }}"
 
-arkNetworkConfigPath: "file:/etc/opt/aces-listener-ark/ark-network.yml"
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name}}/ark-network.yml"
 
 spring:
   datasource:
@@ -17,7 +17,7 @@ spring:
 scanTransactionDepth: 500
 
 server:
-  port: {{app_port}}
+  port: {{ app_port }}
 
 arkAuth:
   requireAuth: false

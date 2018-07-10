@@ -1,41 +1,119 @@
 ---
 - name: ensure apt cache is up to date
   apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - nginx
+    - letsencrypt
+    - ssl-cert
 
-- name: Ensures /etc/opt/aces-listener-ark/ dir exists
-  file: path=/etc/opt/aces-listener-ark state=directory
+- name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
+  file:
+    path: "/etc/opt/{{ app_service_name }}"
+    state: directory
 
 - name: Install ark network config
-  copy:
-    src: aces-listener-ark/ark-mainnet.yml
-    dest: /etc/opt/aces-listener-ark/ark-network.yml
+  template:
+    src: "{{ ark_network_config_file }}"
+    dest: "/etc/opt/{{ app_service_name }}/ark-network.yml"
     
 - name: Install ark listener application config
   template:
-    src: aces-listener-ark/application.yml
-    dest: /etc/opt/aces-listener-ark/application.yml
+    src: aces-listener-ark/application.yml.j2
+    dest: "/etc/opt/{{ app_service_name }}/application.yml"
   
-- name: Ensures /opt/aces-listener-ark/src dir exists
-  file: path=/opt/aces-listener-ark/src state=directory
+- name: "Ensures /opt/{{ app_service_name }}/src dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/src"
+    state: directory
   
 - name: Clone Aces Listener Ark repository into /opt
   git:
     repo: https://github.com/ark-aces/aces-listener-ark.git
     version: master
-    dest: /opt/aces-listener-ark/src/
+    dest: "/opt/{{ app_service_name }}/src/"
     
-- name: Ensures /opt/aces-listener-ark/bin dir exists
-  file: path=/opt/aces-listener-ark/bin state=directory
+- name: "Ensures /opt/{{ app_service_name }}/bin dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/bin"
+    state: directory
 
 - name: Build Aces Listener Ark application jar
   shell: |
     /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
-    find ./target -name "*.jar" -exec cp {} /opt/aces-listener-ark/bin/aces-listener-ark.jar \;
+    find ./target -name "*.jar" -exec cp {} /opt/{{ app_service_name }}/bin/{{ app_service_name }}.jar \;
   args:
-    chdir: /opt/aces-listener-ark/src/
+    chdir: "/opt/{{ app_service_name }}/src/"
 
-- name: Install aces-listener-ark service
-  copy: src=systemd/aces-listener-ark.service dest=/etc/systemd/system/aces-listener-ark.service
+- name: "Install {{ app_service_name }} service"
+  template:
+    src: systemd/aces-listener-ark.service.j2
+    dest: "/etc/systemd/system/{{ app_service_name }}.service"
 
-- name: Start aces-listener-ark service
-  systemd: state=started name=aces-listener-ark daemon_reload=yes enabled=yes
+- name: "Start {{ app_service_name }} service"
+  systemd:
+    state: started
+    name: "{{ app_service_name }}"
+    daemon_reload: yes
+    enabled: yes
+
+- name: "Expose {{ app_service_name }} port"
+  ufw:
+    rule: allow
+    port: "{{ app_port }}"
+    proto: tcp
+  when: expose_port == true
+
+
+- name: Remove default nginx config
+  file:
+    name: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: create letsencrypt directory
+  file: name=/var/www/letsencrypt state=directory
+
+- name: Install system nginx config
+  template:
+    src: nginx/default-http.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ app_service_name }}-http.conf"
+
+- name: Reload nginx to activate letsencrypt site
+  service:
+    name: nginx
+    state: restarted
+
+
+- name: Create letsencrypt certificate
+  shell: "letsencrypt certonly -n --webroot -w /var/www/letsencrypt -m {{ letsencrypt_email }} --agree-tos -d {{ domain_name }}"
+  args:
+    creates: "/etc/letsencrypt/live/{{ domain_name }}"
+  when: use_letsencrypt == true
+
+
+- name: Install nginx site with local setup
+  template:
+    src: nginx/default-local.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ app_service_name }}-local.conf"
+  when: use_letsencrypt == false
+  
+- name: Install nginx site with letsencrypt setup
+  template:
+    src: nginx/default-letsencrypt.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ app_service_name }}-letsencrypt.conf"
+  when: use_letsencrypt == true
+
+- name: Reload nginx to activate letsencrypt site
+  service:
+    name: nginx
+    state: restarted
+
+
+- name: Add letsencrypt cronjob for cert renewal
+  cron:
+    name: letsencrypt_renewal
+    special_time: weekly
+    job: "letsencrypt --renew certonly -n --webroot -w /var/www/{{ app_service_name }}_letsencrypt -m {{ letsencrypt_email }} --agree-tos -d {{ domain_name }} && service nginx reload"
+  when: use_letsencrypt == true
