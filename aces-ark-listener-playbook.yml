@@ -6,7 +6,7 @@
   
   - role: aces-listener-ark
     vars:
-      domain_name: aces-listener-ark.example.com
       app_port: 9091
-      ark_network_config_file: ./configs/ark-networks/ark-mainnet.yml
       app_service_name: aces-listener-ark
+      ark_network_config_file: ./configs/ark-networks/ark-mainnet.yml
+      domain_name: localhost
