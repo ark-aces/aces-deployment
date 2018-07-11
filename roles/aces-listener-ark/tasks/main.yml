@@ -22,7 +22,7 @@
     state: directory
 
 - name: Install ark network config
-  template:
+  copy:
     src: "{{ ark_network_config_file }}"
     dest: "/etc/opt/{{ app_service_name }}/ark-network.yml"
     
@@ -110,6 +110,16 @@
     creates: "/etc/letsencrypt/live/{{ domain_name }}"
   when: domain_name != "localhost" and use_letsencrypt == true
 
+- name: "Ensures /etc/nginx/ssl/ dir exists"
+  file:
+    path: /etc/nginx/ssl
+    state: directory
+  when: domain_name != "localhost" and use_letsencrypt == false
+
+- name: Create self-signed SSL certificate
+  command: "openssl req -new -nodes -x509 -subj \"/C=US/ST=Oregon/L=Portland/O=IT/CN={{ domain_name }}\" -days 3650 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -extensions v3_ca"
+  creates: /etc/nginx/ssl/server.crt
+  when: domain_name != "localhost" and use_letsencrypt == false
 
 - name: Install nginx site with local setup
   template:

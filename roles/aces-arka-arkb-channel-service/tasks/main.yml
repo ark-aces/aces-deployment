@@ -9,61 +9,161 @@
     - postgresql-contrib
     - python-psycopg2
     - nginx
+    - letsencrypt
+    - ssl-cert
 
 - name: ensure database is created
-  postgresql_db: name={{database_name}}
+  postgresql_db:
+    name: "{{database_name}}"
   become: yes
   become_user: postgres
 
 - name: ensure user has access to database
-  postgresql_user: db={{database_name}} name={{database_user}} password={{database_password}} priv=ALL
+  postgresql_user:
+    db: "{{database_name}}"
+    name: "{{database_user}}"
+    password: "{{database_password}}"
+    priv: ALL
   become: yes
   become_user: postgres
 
-- name: Ensures /etc/opt/aces-arka-arkb-channel-service/ dir exists
-  file: path=/etc/opt/aces-arka-arkb-channel-service state=directory
+- name: "Add domain {{ domain_name }} to /etc/hosts"
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 {{ domain_name }}"
+    state: present
+  when: domain_name != "localhost"
+
+- name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
+  file:
+    path: "/etc/opt/{{ app_service_name }}"
+    state: directory
 
 - name: Install arka network config
   copy:
-    src: ark-configs/ark-mainnet.yml
-    dest: /etc/opt/aces-arka-arkb-channel-service/arka-network.yml
-    
+    src: "{{ arka_network_config_file }}"
+    dest: "/etc/opt/{{ app_service_name }}/arka-network.yml"
+
 - name: Install arkb network config
   copy:
-    src: ark-configs/ark-devnet.yml
-    dest: /etc/opt/aces-arka-arkb-channel-service/arkb-network.yml
+    src: "{{ arka_network_config_file }}"
+    dest: "/etc/opt/{{ app_service_name }}/arkb-network.yml"
     
-- name: Install arka network config
+- name: Install ark listener application config
   template:
     src: aces-arka-arkb-channel-service/application.yml.j2
-    dest: /etc/opt/aces-arka-arkb-channel-service/application.yml
+    dest: "/etc/opt/{{ app_service_name }}/application.yml"
   
-- name: Ensures /opt/aces-arka-arkb-channel-service/src dir exists
-  file: path=/opt/aces-arka-arkb-channel-service/src state=directory
+- name: "Ensures /opt/{{ app_service_name }}/src dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/src"
+    state: directory
   
-- name: Clone Aces Arka-Arkb channel service repository into /opt
+- name: Clone Aces Arka-Arkb Channel Service repository into /opt
   git:
     repo: https://github.com/ark-aces/aces-arka-arkb-channel-service.git
     version: master
-    dest: /opt/aces-arka-arkb-channel-service/src/
+    dest: "/opt/{{ app_service_name }}/src/"
     
-- name: Ensures /opt/aces-arka-arkb-channel-service/bin dir exists
-  file: path=/opt/aces-arka-arkb-channel-service/bin state=directory
+- name: "Ensures /opt/{{ app_service_name }}/bin dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/bin"
+    state: directory
 
 - name: Build Aces Arka-Arkb Channel Service application jar
   shell: |
     /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
-    find ./target -name "*.jar" -exec cp {} /opt/aces-arka-arkb-channel-service/bin/aces-arka-arkb-channel-service.jar \;
+    find ./target -name "*.jar" -exec cp {} /opt/{{ app_service_name }}/bin/{{ app_service_name }}.jar \;
   args:
-    chdir: /opt/aces-arka-arkb-channel-service/src/
+    chdir: "/opt/{{ app_service_name }}/src/"
 
-- name: Install aces-arka-arkb-channel-service service
-  copy:
-    src: systemd/aces-arka-arkb-channel-service.service
-    dest: /etc/systemd/system/aces-arka-arkb-channel-service.service
+- name: "Install {{ app_service_name }} service"
+  template:
+    src: systemd/aces-arka-arkb-channel-service.service.j2
+    dest: "/etc/systemd/system/{{ app_service_name }}.service"
 
-- name: Open aces-arka-arkb-channel-service port
-  shell: ufw allow {{port}} 
+- name: "Start {{ app_service_name }} service"
+  systemd:
+    state: started
+    name: "{{ app_service_name }}"
+    daemon_reload: yes
+    enabled: yes
 
-- name: Start aces-arka-arkb-channel-service service
-  systemd: state=started name=aces-arka-arkb-channel-service daemon_reload=yes enabled=yes
+- name: "Wait for {{ app_service_name }} application to start up"
+  wait_for:
+    port: "{{ app_port }}"
+    delay: 1
+    timeout: 600
+
+- name: "Expose {{ app_service_name }} port"
+  ufw:
+    rule: allow
+    port: "{{ app_port }}"
+    proto: tcp
+  when: expose_port == true
+
+- name: Remove default nginx config
+  file:
+    name: /etc/nginx/sites-enabled/default
+    state: absent
+  when: domain_name != "localhost"
+
+- name: create letsencrypt directory
+  file:
+    name: /var/www/letsencrypt
+    state: directory
+  when: domain_name != "localhost"
+
+- name: Install system nginx config
+  template:
+    src: nginx/default-http.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ app_service_name }}-http.conf"
+  when: domain_name != "localhost"
+
+- name: Reload nginx to activate letsencrypt site
+  service:
+    name: nginx
+    state: restarted
+  when: domain_name != "localhost"
+
+- name: Create letsencrypt certificate
+  shell: "letsencrypt certonly -n --webroot -w /var/www/letsencrypt -m {{ letsencrypt_email }} --agree-tos -d {{ domain_name }}"
+  args:
+    creates: "/etc/letsencrypt/live/{{ domain_name }}"
+  when: domain_name != "localhost" and use_letsencrypt == true
+
+- name: "Ensures /etc/nginx/ssl/ dir exists"
+  file:
+    path: /etc/nginx/ssl
+    state: directory
+  when: domain_name != "localhost" and use_letsencrypt == false
+
+- name: Create self-signed SSL certificate
+  command: "openssl req -new -nodes -x509 -subj \"/C=US/ST=Oregon/L=Portland/O=IT/CN={{ domain_name }}\" -days 3650 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -extensions v3_ca"
+  creates: /etc/nginx/ssl/server.crt
+  when: domain_name != "localhost" and use_letsencrypt == false
+
+- name: Install nginx site with local setup
+  template:
+    src: nginx/default-local.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ app_service_name }}-local.conf"
+  when: domain_name != "localhost" and use_letsencrypt == false
+  
+- name: Install nginx site with letsencrypt setup
+  template:
+    src: nginx/default-letsencrypt.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ app_service_name }}-letsencrypt.conf"
+  when: domain_name != "localhost" and use_letsencrypt == true
+
+- name: Reload nginx to activate letsencrypt site
+  service:
+    name: nginx
+    state: restarted
+  when: domain_name != "localhost"
+
+- name: Add letsencrypt cronjob for cert renewal
+  cron:
+    name: letsencrypt_renewal
+    special_time: weekly
+    job: "letsencrypt --renew certonly -n --webroot -w /var/www/{{ app_service_name }}_letsencrypt -m {{ letsencrypt_email }} --agree-tos -d {{ domain_name }} and service nginx reload"
+  when: domain_name != "localhost" and use_letsencrypt == true

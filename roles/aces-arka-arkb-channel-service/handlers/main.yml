@@ -1,2 +1,0 @@
-- name: restart aces-arka-arkb-channel-service
-  service: name=aces-arka-arkb-channel-service state=restarted

@@ -39,7 +39,7 @@ Deploy ACES node to vagrant instance, replacing `{{playbook}}` with the desired 
 ```
 ansible-playbook --verbose \
 -u ubuntu \
---private-key=./.vagrant/machines/aces-service-node-1/virtualbox/private_key \
+--private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
 -i ./inventory \
 ./{{playbook}}.yml
 ```
@@ -49,7 +49,7 @@ Example:
 ```
 ansible-playbook --verbose \
 -u ubuntu \
---private-key=./.vagrant/machines/aces-service-node-1/virtualbox/private_key \
+--private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
 -i ./inventory \
 ./aces-ark-listener-playbook.yml
 ```

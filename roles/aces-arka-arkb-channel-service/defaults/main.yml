@@ -1,0 +1,26 @@
+---
+app_port: 9190
+expose_port: false
+database_name: aces_arka_arkb_channel_service_db
+database_user: aces_arka_arkb_channel_service_user
+database_password: change_me
+domain_name: arka-arkb-channel-service.example.com
+use_letsencrypt: false
+letsencrypt_email: change_me
+arka_network_config_file: configs/ark-mainnet.yml
+arka_unit: ARK
+arkb_network_config_file: configs/ark-devnet.yml
+arkb_unit: DARK
+app_service_name: aces-arka-arkb-channel-service
+app_name: ACES Arka-Arkb Channel Service
+app_description: ACES Arka-Arkb Channel Service (ARK to DARK example)
+app_website: https://arkaces.com
+arka_listener_url: http://localhost:9091
+service_arkb_address: change_me
+service_arkb_passphrase: change_me
+arka_flat_fee: 0
+arka_percent_fee: 0
+arka_per_arkb_rate: 100
+instructions: >
+  After this contract is executed, any ARK sent to depositArkaAddress will be exchanged for 
+  DARK and sent directly to the given recipientArkbAddress with no additional fees. 1 ARK = 100 DARK

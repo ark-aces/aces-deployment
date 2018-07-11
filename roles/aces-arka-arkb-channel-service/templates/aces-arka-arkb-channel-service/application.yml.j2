@@ -1,20 +1,18 @@
 serverInfo:
-  name: "Aces ARK MainNet to ARK DevNet Channel Service"
-  description: "ACES ARK MainNet to ARK DevNet Channel service for value transfers"
-  instructions: >
-    After this contract is executed, any ARK sent to depositArkaAddress will be exchanged for DARK and
-    sent directly to the given recipientArkbAddress with no additional fees. 1 ARK = 100 DARK
+  name: "{{ app_name }}"
+  description: {{ app_description }}
+  instructions: {{ instructions }}
   version: "1.1.0"
-  websiteUrl: "https://arkaces.com"
-  arkbPerArka: "100"
+  websiteUrl: "{{ app_website }}"
+  arkbPerArka: "{{ arka_per_arkb_rate }}"
   inputSchema: >
     {
       "type": "object",
       "properties": {
         "recipientArkbAddress": {
           "type": "string",
-          "title": "Recipient DARK Address (Ark DevNet)",
-          "description": "Enter the DARK (Ark DevNet) address to receive transfers."
+          "title": "Recipient {{ arkb_unit }} Address",
+          "description": "Enter the {{ arkb_unit }} address to receive transfers."
         }
       },
       "required": [
@@ -73,26 +71,26 @@ spring:
     hibernate:
       ddl-auto: "validate"
 
-arkaNetworkConfigPath: "file:/etc/opt/aces-arka-arkb-channel-service/arka-network.yml"
-arkbNetworkConfigPath: "file:/etc/opt/aces-arka-arkb-channel-service/arkb-network.yml"
+arkaNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/arka-network.yml"
+arkbNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/arkb-network.yml"
 
-arkaUnit: "ARK"
-arkbUnit: "DARK"
+arkaUnit: "{{ arka_unit }}"
+arkbUnit: "{{ arkb_unit }}"
 
 fees:
-  arkaFlatFee: 0
-  arkaPercentFee: 0
+  arkaFlatFee: {{ arka_flat_fee }}
+  arkaPercentFee: {{ arka_percent_fee }}
 
-arkbPerArka: 100
+arkbPerArka: {{ arka_per_arkb_rate }}
 
 server:
-  port: 9191
+  port: {{ app_port }}
 
 arkaListener:
-  url: http://localhost:9091
+  url: {{ arka_listener_url }}
 
-arkaEventCallbackUrl: http://localhost:9191/arkaEvents
+arkaEventCallbackUrl: http://{{ domain_name }}:{{ app_port }}/arkaEvents
 
 serviceArkbAccount:
-  address: change-me
-  passphrase: change-me
+  address: {{ service_arkb_address }}
+  passphrase: {{ service_arkb_passphrase }}
