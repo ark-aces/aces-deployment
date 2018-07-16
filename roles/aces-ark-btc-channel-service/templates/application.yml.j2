@@ -1,0 +1,32 @@
+serverInfo:
+  name: "{{ app_name }}"
+  description: {{ app_description }}
+  instructions: {{ instructions }}
+  version: "1.0.0"
+  websiteUrl: "{{ app_website }}"
+  flatFee: "{{ flat_fee }}"
+  percentFee: "{{ percent_fee }}"
+  capacities:
+    -
+      value: "{{ btc_capacity }}"
+      unit: "BTC"
+      displayValue: "{{ btc_capacity_display_value }}"
+
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/ark-network.yml"
+
+fees:
+  btcFlatFee: "{{ flat_fee }}"
+  btcPercentFee: "{{ percent_fee }}"
+
+server:
+  port: {{ app_port }}
+
+bitcoinRpc:
+  url: {{ bitcoind_rpc_url }}
+  username: {{ bitcoind_rpc_user }}
+  password: {{ bitcoind_rpc_password }}
+  
+arkListener:
+  url: {{ ark_listener_url }}
+
+arkEventCallbackUrl: http://localhost:{{ app_port }}/arkEvents

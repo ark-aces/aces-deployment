@@ -39,11 +39,19 @@
     expose_port: expose_port
     app_service_name: app_service_name
 
-- name: "Install nginx proxy for {{ app_service_name }}"
-  import_role:
-    name: "nginx-proxy"
+- name: "Install nginx local proxy for {{ app_service_name }}"
+  include_role:
+    name: nginx-proxy-local
   vars:
     domain_name: domain_name
-    use_letsencrypt: use_letsencrypt
+    app_port: app_port
+  when: (install_nginx_proxy and use_letsencrypt == false)
+ 
+- name: "Install nginx letsencrypt proxy for {{ app_service_name }}"
+  include_role:
+    name: nginx-proxy-letsencrypt
+  vars:
+    domain_name: domain_name
     letsencrypt_email: letsencrypt_email
     app_port: app_port
+  when: (install_nginx_proxy and use_letsencrypt == true)

@@ -1,5 +1,5 @@
 ---
-- hosts: aces-marketplace-node
+- hosts: aces-node-1
   become: true
   vars:
      database_name: aces_marketplace

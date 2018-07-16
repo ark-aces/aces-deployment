@@ -29,7 +29,7 @@
 
 - name: Install system nginx config
   template:
-    src: nginx/default-http.conf.j2
+    src: default-http.conf.j2
     dest: "/etc/nginx/sites-enabled/{{ domain_name }}-http.conf"
 
 - name: Reload nginx to activate letsencrypt site
@@ -49,7 +49,7 @@
 
 - name: Install nginx site with letsencrypt setup
   template:
-    src: nginx/default-https.conf.j2
+    src: default-https.conf.j2
     dest: "/etc/nginx/sites-enabled/{{ domain_name }}-https.conf"
 
 - name: Reload nginx to activate letsencrypt site

@@ -66,6 +66,12 @@ ansible-playbook --verbose \
 ./aces-ark-listener-playbook.yml
 ```
 
+ansible-playbook --verbose \
+-u ubuntu \
+--private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
+-i ./inventory \
+./aces-ark-btc-channel-service-playbook.yml
+
 
 ## Server Deployments
 

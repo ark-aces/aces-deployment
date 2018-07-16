@@ -1,0 +1,9 @@
+rpcuser={{ bitcoind_rpc_user }}
+rpcpassword={{ bitcoind_rpc_password }}
+
+# only allow connections from localhost
+rpcallowip=127.0.0.1/0
+
+{% if is_testnet %}
+testnet=1
+{% endif %}

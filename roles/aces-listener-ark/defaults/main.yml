@@ -1,6 +1,7 @@
 ---
 app_port: 9091
 expose_port: false
+install_nginx_proxy: true
 domain_name: localhost
 use_letsencrypt: false
 letsencrypt_email: change_me

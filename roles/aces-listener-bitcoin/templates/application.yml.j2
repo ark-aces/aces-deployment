@@ -1,0 +1,31 @@
+serverInfo:
+  name: "{{ app_name }}"
+  description: "{{ app_description }}"
+  version: "1.0.0"
+  websiteUrl: "{{ app_website_url }}"
+
+spring:
+  datasource:
+    url: "jdbc:h2:/opt/{{ app_service_name }}/aces-listener-bitcoin.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+    driver-class-name: "org.h2.Driver"
+  jpa:
+    hibernate:
+      ddl-auto: "create-drop"
+
+maxScanBlockDepth: 4
+
+bitcoinRpc:
+  url: {{ bitcoind_rpc_url }}
+  username: {{ bitcoind_rpc_user }}
+  password: {{ bitcoind_rpc_password }}
+
+server:
+  port: {{ app_port }}
+
+arkAuth:
+  requireAuth: false
+
+logging:
+  level:
+    com.arkaces.aces_listener_bitcoin.BitcoinEventListener: ERROR
+    com.arkaces.aces_listener_bitcoin.bitcoin.BitcoinService: ERROR

@@ -1,0 +1,36 @@
+---
+- debug: msg="value = {{ is_testnet }}"
+
+- apt_repository:
+    repo: ppa:bitcoin/bitcoin
+    state: present
+
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - bitcoind
+
+- name: Ensures /var/bitcoin/ dir exists
+  file:
+    path: /var/bitcoin
+    state: directory
+
+- name: Install bitcoind config
+  template:
+    src: bitcoin.conf.j2
+    dest: /var/bitcoin/bitcoin.conf
+
+- name: Install bitcoind service
+  template:
+    src: bitcoind.service.j2
+    dest: /etc/systemd/system/bitcoind.service
+
+- name: Start bitcoind service
+  systemd:
+    state: restarted
+    name: bitcoind
+    daemon_reload: yes
+    enabled: yes

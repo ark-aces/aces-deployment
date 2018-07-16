@@ -1,0 +1,46 @@
+---
+- hosts: aces-node
+  become: true
+  roles:
+    - role: aces-common
+    
+    - role: bitcoind
+      bitcoind_data_directory: /var/bitcoin
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
+      is_testnet: true
+    
+    - role: aces-listener-ark
+      app_port: 9091
+      ark_network_config_file: configs/ark-networks/ark-mainnet.yml
+      app_service_name: aces-listener-ark
+    
+    - role: aces-ark-btc-channel-service
+      app_port: 9190
+      expose_port: false
+      use_local_database: true
+      database_host: localhost
+      database_port: 5432
+      database_name: aces_ark_btc_channel_service_db
+      database_user: aces_ark_btc_channel_service_user
+      database_password: change_me
+      domain_name: ark-btc-channel-service.example.com
+      use_letsencrypt: false
+      letsencrypt_email: change_me
+      ark_network_config_file: configs/ark-mainnet.yml
+      app_service_name: aces-ark-btc-channel-service
+      app_name: ACES ARK-BTC Channel Service
+      app_description: ACES ARK-BTC Channel Service
+      app_website: https://arkaces.com
+      ark_listener_url: http://localhost:9091
+      bitcoind_rpc_url: http://localhost:18332/
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
+      btc_capacity: 5000
+      btc_capacity_display_value: 5000.00 BTC
+      flat_fee: 0
+      percent_fee: 0
+      ark_per_btc_rate: 100
+      instructions: >
+        After this contract is executed, any ARK sent to depositArkAddress will be exchanged for 
+        BTC and sent directly to the given recipientBtcAddress with no additional fees.

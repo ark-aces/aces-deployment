@@ -1,28 +1,34 @@
 ---
+- debug: msg="value = {{ is_testnet }}"
+
+- name: "Install bitcoind service"
+  import_role:
+    name: bitcoind
+  vars:
+    bitcoind_data_directory: bitcoind_data_directory
+    bitcoind_rpc_user: bitcoind_rpc_user
+    bitcoind_rpc_password: bitcoind_rpc_password
+    is_testnet: is_testnet
+  when: install_bitcoind == true
+
 - name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
   file:
     path: "/etc/opt/{{ app_service_name }}"
     state: directory
-
-- name: "Install ark network config"
-  copy:
-    src: "{{ ark_network_config_file }}"
-    dest: "/etc/opt/{{ app_service_name }}/ark-network.yml"
     
 - name: "Install {{ app_service_name }} application config"
   template:
     src: "application.yml.j2"
     dest: "/etc/opt/{{ app_service_name }}/application.yml"
-  
+
 - name: "Install {{ app_service_name }} application"
-  import_role:
+  include_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-listener-ark"
+    repo_name: "aces-listener-bitcoin"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name
-
 
 - name: "Install nginx local proxy for {{ app_service_name }}"
   include_role:
