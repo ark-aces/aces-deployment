@@ -1,0 +1,70 @@
+---
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - perl
+    - nginx
+    - letsencrypt
+    - ssl-cert
+    - openssl
+    
+- name: "Add domain {{ domain_name }} to /etc/hosts"
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 {{ domain_name }}"
+    state: present
+
+- name: Remove default nginx config
+  file:
+    name: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: "Ensures /var/www/letsencrypt dir exists"
+  file:
+    path: "/var/www/letsencrypt"
+    state: directory
+
+- name: Install system nginx config
+  template:
+    src: nginx/default-http.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ domain_name }}-http.conf"
+
+- name: Reload nginx to activate letsencrypt site
+  service:
+    name: nginx
+    state: reloaded
+
+- name: Create letsencrypt certificate
+  shell: >
+    letsencrypt certonly -n --webroot -w /var/www/letsencrypt -m {{ letsencrypt_email }} --agree-tos 
+    -d {{ domain_name }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ domain_name }}"
+    
+- name: Generate dhparams file
+  shell: "openssl dhparam -out /etc/ssl/certs/{{ domain_name }}-dhparam.pem 2048"
+
+- name: Install nginx site with letsencrypt setup
+  template:
+    src: nginx/default-https.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ domain_name }}-https.conf"
+
+- name: Reload nginx to activate letsencrypt site
+  service:
+    name: nginx
+    state: restarted
+
+# Schedule automatic cert renewal, we stagger these jobs randomly over 9000 sec to avoid collisions 
+# with other renewals scheduled at the same time
+- name: Add letsencrypt cronjob for cert renewal
+  cron:
+    name: letsencrypt_renewal
+    special_time: weekly
+    job: >
+      perl -le 'sleep rand 9000'
+      && letsencrypt --renew certonly -n --webroot -w /var/www/letsencrypt -m {{ letsencrypt_email }} 
+      --agree-tos -d {{ domain_name }} 
+      && service nginx reload

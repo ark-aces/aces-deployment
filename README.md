@@ -22,19 +22,31 @@ ansible-galaxy install -r requirements.yml
 
 ## Local ACES Node deployment
 
-Create VM server with ip `172.17.177.21` from the given `Vagrantfile`:
+Create VM with the given `Vagrantfile`:
 
 ```
 vagrant up
 ```
 
-Get ssh key path from vagrant ssh-config:
+Get ssh port and key path from vagrant ssh-config and update `inventory` file to match your 
+connection parameters:
 
 ```
 vagrant ssh-config
 ```
 
-Deploy ACES node to vagrant instance, replacing `{{playbook}}` with the desired playbook file:
+Ensure python is installed on your target servers. You can run the `setup-playbook` to
+automatically install:
+
+```
+ansible-playbook --verbose \
+-u ubuntu \
+--private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
+-i ./inventory \
+./setup-playbook.yml
+```
+
+Deploy ACES node to vagrant instance, replacing `{{playbook}}` with your playbook file:
 
 ```
 ansible-playbook --verbose \
@@ -53,3 +65,19 @@ ansible-playbook --verbose \
 -i ./inventory \
 ./aces-ark-listener-playbook.yml
 ```
+
+
+## Server Deployments
+
+1. Create your server instance on any cloud infrastructure provider and download the 
+   ssh keys for your user
+   
+2. Add your server info to an ansbile `inventory` file
+
+3. Set up a playbook for your desired configuration by composing the provided roles with your 
+   custom parameters
+   
+4. Install python on the target server using the `setup-playbook.yml` 
+   (needed to run some ansible server side code for collecting info)
+   
+4. Run your playbook with `ansbile-playbook`, providing your ansible inventory and ssh key

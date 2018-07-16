@@ -1,0 +1,16 @@
+server {
+    server_tokens off;
+
+    listen 80;
+    server_name {{ domain_name }};
+    
+    location ~ /.well-known {
+        default_type "text/plain";
+        root /var/www/letsencrypt;
+        allow all;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}

@@ -1,0 +1,5 @@
+---
+domain_name: example.com
+use_letsencrypt: false
+letsencrypt_email: change_me
+app_port: 9000

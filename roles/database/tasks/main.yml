@@ -1,0 +1,25 @@
+---
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2
+
+- name: "Ensure database is created"
+  postgresql_db:
+    name: "{{database_name}}"
+  become: yes
+  become_user: postgres
+
+- name: "Ensure user has access to database"
+  postgresql_user:
+    db: "{{database_name}}"
+    name: "{{database_user}}"
+    password: "{{database_password}}"
+    priv: ALL
+  become: yes
+  become_user: postgres

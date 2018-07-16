@@ -1,0 +1,62 @@
+---
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - git
+    
+- name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
+  file:
+    path: "/etc/opt/{{ app_service_name }}"
+    state: directory
+
+- name: "Ensures /opt/{{ app_service_name }}/src dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/src"
+    state: directory
+  
+- name:  "Clone {{ repo_name }} repository into /opt"
+  git:
+    repo: "https://github.com/ark-aces/{{ repo_name }}.git"
+    version: master
+    dest: "/opt/{{ app_service_name }}/src/"
+    
+- name: "Ensures /opt/{{ app_service_name }}/bin dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/bin"
+    state: directory
+
+- name: "Build {{ repo_name }} application jar"
+  shell: |
+    /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
+    find ./target -name "*.jar" -exec cp {} /opt/{{ app_service_name }}/bin/{{ app_service_name }}.jar \;
+  args:
+    chdir: "/opt/{{ app_service_name }}/src/"
+
+- name: "Install {{ app_service_name }} service"
+  template:
+    src: application.service.j2
+    dest: "/etc/systemd/system/{{ app_service_name }}.service"
+
+- name: "Start {{ app_service_name }} service"
+  systemd:
+    state: restarted
+    name: "{{ app_service_name }}"
+    daemon_reload: yes
+    enabled: yes
+
+- name: "Wait for {{ app_service_name }} application to start up"
+  wait_for:
+    port: "{{ app_port }}"
+    delay: 1
+    timeout: 600
+
+- name: "Expose {{ app_service_name }} port"
+  ufw:
+    rule: allow
+    port: "{{ app_port }}"
+    proto: tcp
+  when: expose_port == true
+

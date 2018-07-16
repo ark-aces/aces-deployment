@@ -64,7 +64,7 @@ serverInfo:
 spring:
   datasource:
     platform: "postgres"
-    url: "jdbc:postgresql://localhost:5432/{{database_name}}"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
     username: "{{database_user}}"
     password: "{{database_password}}"
   jpa:

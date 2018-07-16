@@ -1,35 +1,35 @@
 ---
 - hosts: aces-node
-  sudo: true
+  become: true
   roles:
-  - role: aces-common
-  
-  - role: aces-listener-ark
-    app_port: 9091
-    ark_network_config_file: ./configs/ark-networks/ark-mainnet.yml
-    app_service_name: aces-listener-ark
-      
-  - role: aces-arka-arkb-channel-service
-    app_port: 9191
-    database_name: aces_ark_dark_channel_service_db
-    database_user: aces_ark_dark_channel_service_user
-    database_password: change_me
-    domain_name: aces-ark-dark-channel-service.example.com
-    use_letsencrypt: false
-    arka_network_config_file: ./configs/ark-networks/ark-mainnet.yml
-    arka_unit: ARK
-    arkb_network_config_file: ./configs/ark-networks/ark-devnet.yml
-    arkb_unit: DARK
-    app_service_name: aces-ark-dark-channel-service
-    app_name: ACES ARK-DARK Channel Service
-    app_description: ACES ARK-DARK Channel Service example
-    app_website_url: https://arkaces.com
-    arka_listener_url: http://localhost:9091
-    service_arkb_address: change_me
-    service_arkb_passphrase: change_me
-    arka_flat_fee: 0
-    arka_percent_fee: 0
-    arka_per_arkb_rate: 100
-    instructions: >
-      After this contract is executed, any ARK sent to depositArkaAddress will be exchanged for 
-      DARK and sent directly to the given recipientArkbAddress with no additional fees. 1 ARK = 100 DARK
+    - role: aces-common
+    
+    - role: aces-listener-ark
+      app_port: 9091
+      ark_network_config_file: ./configs/ark-networks/ark-mainnet.yml
+      app_service_name: aces-listener-ark
+        
+    - role: aces-arka-arkb-channel-service
+      app_port: 9191
+      database_name: aces_ark_dark_channel_service_db
+      database_user: aces_ark_dark_channel_service_user
+      database_password: change_me
+      domain_name: aces-ark-dark-channel-service.example.com
+      use_letsencrypt: false
+      arka_network_config_file: ./configs/ark-networks/ark-mainnet.yml
+      arka_unit: ARK
+      arkb_network_config_file: ./configs/ark-networks/ark-devnet.yml
+      arkb_unit: DARK
+      app_service_name: aces-ark-dark-channel-service
+      app_name: ACES ARK-DARK Channel Service
+      app_description: ACES ARK-DARK Channel Service example
+      app_website_url: https://arkaces.com
+      arka_listener_url: http://localhost:9091
+      service_arkb_address: change_me
+      service_arkb_passphrase: change_me
+      arka_flat_fee: 0
+      arka_percent_fee: 0
+      arka_per_arkb_rate: 100
+      instructions: >
+        After this contract is executed, any ARK sent to depositArkaAddress will be exchanged for 
+        DARK and sent directly to the given recipientArkbAddress with no additional fees. 1 ARK = 100 DARK
