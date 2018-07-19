@@ -1,19 +1,35 @@
 ---
-- name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
+- name: "Install {{ app_service_name }} database"
+  import_role:
+    name: database
+  vars:
+    database_host: database_host
+    database_port: database_port
+    database_name: database_name
+    database_user: database_user
+    database_password: database_password
+  when: use_local_database == true
+
+- name: "Ensure /etc/opt/{{ app_service_name }}/ dir exists"
   file:
     path: "/etc/opt/{{ app_service_name }}"
     state: directory
 
+- name: "Install {{ app_service_name }} ark network config"
+  copy:
+    src: "{{ ark_network_config_file }}"
+    dest: "/etc/opt/{{ app_service_name }}/ark-network.yml"
+    
 - name: "Install {{ app_service_name }} application config"
   template:
     src: "application.yml.j2"
     dest: "/etc/opt/{{ app_service_name }}/application.yml"
-
+ 
 - name: "Install {{ app_service_name }} application"
   include_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-listener-bitcoin"
+    repo_name: "aces-bitcoin-ark-channel-service"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name
@@ -25,7 +41,7 @@
     domain_name: domain_name
     app_port: app_port
   when: (install_nginx_proxy and use_letsencrypt == false)
-
+ 
 - name: "Install nginx letsencrypt proxy for {{ app_service_name }}"
   include_role:
     name: nginx-proxy-letsencrypt

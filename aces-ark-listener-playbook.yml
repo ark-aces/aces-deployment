@@ -1,4 +1,5 @@
 ---
+- import_playbook: setup-playbook.yml
 - hosts: aces-node
   become: true
   roles:

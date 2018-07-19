@@ -1,15 +1,20 @@
 ---
+- import_playbook: setup-playbook.yml
 - hosts: aces-node
   become: true
   roles:
     - role: aces-common
     
-    - role: aces-listener-bitcoin
-      app_port: 9091
-      app_service_name: aces-listener-bitcoin
-      bitcoin_data_directory: /var/bitcoin
-      bitcoind_rpc_url: http://localhost:18332/
+    - role: bitcoind
+      bitcoind_data_directory: /var/bitcoin
       bitcoind_rpc_user: bitcoinrpc
       bitcoind_rpc_password: change_me
       is_testnet: true
+    
+    - role: aces-listener-bitcoin
+      app_port: 9091
+      app_service_name: aces-listener-bitcoin
+      bitcoind_rpc_url: http://localhost:18332/
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
       domain_name: aces-listener-bitcoin.example.com

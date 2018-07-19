@@ -1,0 +1,51 @@
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node
+  become: true
+  roles:
+    - role: aces-common
+    
+    - role: bitcoind
+      bitcoind_data_directory: /var/bitcoin
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
+      is_testnet: is_testnet
+  
+    - role: aces-listener-bitcoin
+      app_port: 9091
+      app_service_name: aces-listener-bitcoin
+      bitcoind_data_directory: /var/bitcoin
+      bitcoind_rpc_url: http://localhost:18332/
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
+      is_testnet: true
+      domain_name: aces-listener-bitcoin.example.com
+
+    - role: aces-bitcoin-ark-channel-service
+      app_port: 9190
+      expose_port: false
+      use_local_database: true
+      database_host: localhost
+      database_port: 5432
+      database_name: aces_bitcoin_ark_channel_service_db
+      database_user: aces_bitcoin_ark_channel_service_user
+      database_password: change_me
+      domain_name: bitcoin-ark-channel-service.example.com
+      use_letsencrypt: false
+      letsencrypt_email: change_me
+      ark_network_config_file: configs/ark-mainnet.yml
+      app_service_name: aces-bitcoin-ark-channel-service
+      app_name: ACES BTC-ARK Channel Service
+      app_description: ACES BTC-ARK Channel Service
+      app_website: https://arkaces.com
+      bitcoin_listener_url: http://localhost:9091
+      bitcoind_rpc_url: http://localhost:18332/
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
+      service_ark_account: change_me
+      service_ark_passphrase: change_me
+      flat_fee_btc: 0
+      percent_fee: 0
+      instructions: >
+        After this contract is executed, any BTC sent to depositArkAddress will be exchanged for 
+        ARK and sent directly to the given recipientBtcAddress with no additional fees.

@@ -1,0 +1,101 @@
+serverInfo:
+  name: "{{ app_name }}"
+  description: {{ app_description }}
+  instructions: {{ instructions }}
+  version: "1.1.0"
+  websiteUrl: "{{ app_website }}"
+  inputSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "recipientArkAddress": {
+          "type": "string",
+          "title": "Recipient ARK Address",
+          "description": "Enter recipient ARK address to transfer funds to."
+        },
+         "returnBtcAddress": {
+            "type": "string",
+            "title": "Return BTC Address",
+            "description": "Enter return BTC address to send returns to."
+          }
+      },
+      "required": [
+        "recipientArkAddress"
+      ]
+    }
+  outputSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "depositBtcAddress": {
+          "type": "string"
+        },
+        "recipientArkAddress": {
+          "type": "string"
+        },
+        "transfers": {
+          "type": "array",
+          "properties": {
+            "btcAmount": {
+              "type": "string"
+            },
+            "btcToArkRate": {
+              "type": "string"
+            },
+            "btcFlatFee": {
+              "type": "string"
+            },
+            "btcPercentFee": {
+              "type": "string"
+            },
+            "btcTotalFee": {
+              "type": "string"
+            },
+            "arkSendAmount": {
+              "type": "string"
+            },
+            "arkTransactionId": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+
+spring:
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{ database_name }}"
+    username: "{{ database_user }}"
+    password: "{{ database_password }}"
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+
+security.ignored: "/**"
+
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/ark-network.yml"
+
+fees:
+  btcFlatFee: {{ flat_fee_btc }}
+  btcPercentFee: {{ percent_fee }}
+
+server:
+  port: {{ app_port }}
+
+serviceArkAccount:
+  address: "{{ service_ark_account }}"
+  passphrase: "{{ service_ark_passphrase }}"
+
+bitcoinRpc:
+  url: {{ bitcoind_rpc_url }}
+  username: {{ bitcoind_rpc_user }}
+  password: {{ bitcoind_rpc_password }}
+  
+bitcoinListener:
+  url: {{ bitcoin_listener_url }}
+
+bitcoinEventCallbackUrl: http://localhost:{{ app_port }}/bitcoinEvents

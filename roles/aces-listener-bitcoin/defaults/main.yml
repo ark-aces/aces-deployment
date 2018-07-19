@@ -5,12 +5,9 @@ install_nginx_proxy: true
 use_letsencrypt: false
 domain_name: localhost
 letsencrypt_email: change_me
-install_bitcoind: true
-bitcoind_data_directory: /var/bitcoin
 bitcoind_rpc_url: http://localhost:18332/
 bitcoind_rpc_user: bitcoinrpc
 bitcoind_rpc_password: change_me
-is_testnet: true
 app_service_name: aces-listener-bitcoin
 app_name: ACES Bitcoin Listener
 app_description: ACES Listener implementation for Bitcoin
