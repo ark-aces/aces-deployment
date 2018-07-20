@@ -1,0 +1,11 @@
+---
+app_port: 9091
+expose_port: false
+install_nginx_proxy: true
+use_letsencrypt: false
+domain_name: localhost
+letsencrypt_email: change_me
+app_service_name: aces-listener-ethereum
+app_name: ACES Ethereum Listener
+app_description: ACES Listener implementation for Ethereum
+app_website_url: https://arkaces.com

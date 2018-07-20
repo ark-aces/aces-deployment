@@ -1,0 +1,36 @@
+---
+- name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
+  file:
+    path: "/etc/opt/{{ app_service_name }}"
+    state: directory
+
+- name: "Install {{ app_service_name }} application config"
+  template:
+    src: "application.yml.j2"
+    dest: "/etc/opt/{{ app_service_name }}/application.yml"
+
+- name: "Install {{ app_service_name }} application"
+  include_role:
+    name: "spring-boot-app"
+  vars:
+    repo_name: "aces-listener-ethereum"
+    app_port: app_port
+    expose_port: expose_port
+    app_service_name: app_service_name
+
+- name: "Install nginx local proxy for {{ app_service_name }}"
+  include_role:
+    name: nginx-proxy-local
+  vars:
+    domain_name: domain_name
+    app_port: app_port
+  when: (install_nginx_proxy and use_letsencrypt == false)
+
+- name: "Install nginx letsencrypt proxy for {{ app_service_name }}"
+  include_role:
+    name: nginx-proxy-letsencrypt
+  vars:
+    domain_name: domain_name
+    letsencrypt_email: letsencrypt_email
+    app_port: app_port
+  when: (install_nginx_proxy and use_letsencrypt == true)

@@ -1,0 +1,26 @@
+serverInfo:
+  name: "{{ app_name }}"
+  description: "{{ app_description }}"
+  version: "1.1.0"
+  websiteUrl: "{{ app_website_url }}"
+
+maxScanBlockDepth: 4
+
+ethereumRpc:
+  url: http://127.0.0.1:8545
+
+server:
+  port: {{ app_port }}
+  tomcat:
+    max-threads: 10
+
+arkAuth:
+  requireAuth: false
+
+spring:
+  datasource:
+    url: "jdbc:h2:/opt/{{ app_service_name }}/aces-listener-ethereum.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+    driver-class-name: "org.h2.Driver"
+  jpa:
+    hibernate:
+      ddl-auto: "update"

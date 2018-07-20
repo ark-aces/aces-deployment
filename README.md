@@ -28,23 +28,8 @@ Create VM with the given `Vagrantfile`:
 vagrant up
 ```
 
-Get ssh port and key path from vagrant ssh-config and update `inventory` file to match your 
-connection parameters:
-
-```
-vagrant ssh-config
-```
-
-Ensure python is installed on your target servers. You can run the `setup-playbook` to
-automatically install:
-
-```
-ansible-playbook --verbose \
--u ubuntu \
---private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
--i ./inventory \
-./setup-playbook.yml
-```
+Get ssh port and key path from vagrant ssh-config using `vagrant ssh-config` 
+and update the ansible `inventory` file to match your VM's ssh host and port.
 
 Deploy ACES node to vagrant instance, replacing `{{playbook}}` with your playbook file:
 
@@ -65,6 +50,13 @@ ansible-playbook --verbose \
 -i ./inventory \
 ./aces-ark-listener-playbook.yml
 ```
+
+
+ansible-playbook --verbose \
+-u ubuntu \
+--private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
+-i ./inventory \
+./aces-ethereum-listener-playbook.yml
 
 
 ## Server Deployments

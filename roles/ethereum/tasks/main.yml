@@ -1,0 +1,32 @@
+---
+- debug: msg="ethereum_data_directory = {{ ethereum_data_directory }}"
+
+- apt_repository:
+    repo: ppa:ethereum/ethereum
+    state: present
+
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - ethereum
+    - solc
+
+- name: "Ensures {{ ethereum_data_directory }} dir exists"
+  file:
+    path: "{{ ethereum_data_directory }}"
+    state: directory
+    
+- name: Install geth service
+  template:
+    src: "geth-{{ type }}.service.j2"
+    dest: /etc/systemd/system/geth.service
+
+- name: Start geth service
+  systemd:
+    state: restarted
+    name: geth
+    daemon_reload: yes
+    enabled: yes

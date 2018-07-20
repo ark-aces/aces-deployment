@@ -1,0 +1,6 @@
+---
+# Type of network to run: "mainnet", "testnet-rinkeby", or "dev" 
+type: testnet-rinkeby
+
+# Data directory to sync blockchain too
+ethereum_data_directory: /var/ethereum

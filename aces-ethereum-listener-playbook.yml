@@ -1,0 +1,15 @@
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node
+  become: true
+  roles:
+    - role: aces-common
+    
+    - role: ethereum
+      ethereum_data_directory: /var/ethereum
+      type: testnet-rinkeby
+    
+    - role: aces-listener-ethereum
+      app_port: 9091
+      app_service_name: aces-listener-ethereum
+      domain_name: aces-listener-ethereum.example.com
