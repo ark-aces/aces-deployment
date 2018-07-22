@@ -1,0 +1,18 @@
+---
+app_service_name: aces-marketplace
+app_password: change_me
+database_name: aces_marketplace
+database_user: aces_marketplace_user
+database_password: change_me
+app_port: 8081
+expose_port: false
+oauth2_secret: change_me
+mail_host: smtp.mailgun.org
+mail_port: mail_port
+mail_user: change_me
+mail_password: change_me
+fromName: "ACES Marketplace"
+fromEmailAddress: change_me@example.com
+base_url: https://change_me.example.com
+recaptcha_secret: change_me
+letsencrypt_email: change_me@example.com

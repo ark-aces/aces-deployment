@@ -1,0 +1,10 @@
+[Unit]
+Description=Aces Marketplace Backend
+
+[Service]
+Restart=always
+WorkingDirectory=/app/aces-marketplace/backend
+ExecStart=/usr/bin/mvn spring-boot:run -Dspring.config.location=file:/etc/aces-marketplace-backend/application.yml
+
+[Install]
+WantedBy=multi-user.target
