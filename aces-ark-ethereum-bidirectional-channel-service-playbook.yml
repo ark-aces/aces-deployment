@@ -1,0 +1,74 @@
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node
+  become: true
+  roles:
+    - role: aces-common
+    
+    - role: ethereum
+      ethereum_data_directory: /var/ethereum
+      type: testnet-rinkeby
+    
+    - role: aces-listener-ark
+      app_port: 9091
+      ark_network_config_file: configs/ark-networks/ark-mainnet.yml
+      app_service_name: aces-listener-ark
+      
+    - role: aces-listener-ethereum
+      app_port: 9092
+      app_service_name: aces-listener-ethereum
+    
+    - role: aces-ark-ethereum-channel-service
+      app_port: 9190
+      expose_port: false
+      use_local_database: true
+      database_host: localhost
+      database_port: 5432
+      database_name: aces_ark_ethereum_channel_service_db
+      database_user: aces_ark_ethereum_channel_service_user
+      database_password: change_me
+      install_nginx_proxy: true
+      domain_name: ark-ethereum-channel-service.example.com
+      use_letsencrypt: false
+      letsencrypt_email: change_me
+      ark_network_config_file: configs/ark-mainnet.yml
+      app_service_name: aces-ark-ethereum-channel-service
+      app_name: ACES ARK-ETH Channel Service
+      app_description: ACES ARK-eth Channel Service
+      app_website: https://arkaces.com
+      ark_listener_url: http://localhost:9091
+      ethereum_rcp_url: http://127.0.0.1:8545
+      service_eth_address: change_me
+      service_eth_passphrase: change_me
+      flat_fee: 0
+      percent_fee: 0
+      instructions: >
+        After this contract is executed, any ARK sent to depositArkAddress will be exchanged for 
+        ETH and sent directly to the given recipientEthAddress with no additional fees.
+
+    - role: aces-ethereum-ark-channel-service
+      app_port: 9191
+      expose_port: false
+      use_local_database: true
+      database_host: localhost
+      database_port: 5432
+      database_name: aces_ethereum_ark_channel_service_db
+      database_user: aces_ethereum_ark_channel_service_user
+      database_password: change_me
+      install_nginx_proxy: true
+      domain_name: ethereum-ark-channel-service.example.com
+      use_letsencrypt: false
+      letsencrypt_email: change_me
+      ark_network_config_file: configs/ark-mainnet.yml
+      app_service_name: aces-ethereum-ark-channel-service
+      app_name: ACES ETH-ARK Channel Service
+      app_description: ACES ETH_ARK Channel Service
+      app_website: https://arkaces.com
+      ethereum_listener_url: http://localhost:9092
+      service_ark_account: change_me
+      service_ark_passphrase: change_me
+      flat_fee_eth: 0
+      percent_fee: 0
+      instructions: >
+        After this contract is executed, any ETH sent to deposit address will be exchanged for 
+        ARK and sent directly to the given recipient address.
