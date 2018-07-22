@@ -1,21 +1,91 @@
 ---
-- name: ensure apt cache is up to date
+- name: "ensure apt cache is up to date"
   apt: update_cache=yes
-  
-- name: ensure packages are installed
+
+# Add java repository from PPA and install.
+- apt_repository:
+    repo: ppa:webupd8team/java
+# Frontend repos
+- apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: "ensure packages are installed"
   apt: name={{item}}
   with_items:
-    - postgresql
-    - postgresql-contrib
-    - python-psycopg2
+    - ufw
+    - oracle-java8-installer
+    - maven
+    - pwgen
     - nginx
+    - python-software-properties
+    #?? curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+    - nodejs
+    # Frontend dependencies
+    - software-properties-common
+    - certbot
 
-- name: ensure database is created
-  postgresql_db: name={{database_name}}
-  become: yes
-  become_user: postgres
+- name: Configure ufw rules
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  with_items:
+    - { rule: 'allow', port: '22', proto: 'tcp' }
+    - { rule: 'allow', port: '80', proto: 'tcp' }
+    - { rule: 'allow', port: '443', proto: 'tcp' }
 
-- name: ensure user has access to database
-  postgresql_user: db={{database_name}} name={{database_user}} password={{database_password}} priv=ALL
-  become: yes
-  become_user: postgres
+- name: "Create database"
+  import_role:
+    name: database
+  vars:
+    database_host: localhost
+    database_name: default
+    database_user: default_user
+    database_password: change_me
+
+- name: "Creates apps directory"
+  file: path=/apps state=directory
+
+- name: "Install aces-marketplace application"
+  import_role:
+    name: "spring-boot-app"
+  vars:
+    repo_name: "aces-marketplace"
+    app_port: '{{ app_port }}'
+    expose_port: '{{ expose_port }}'
+    app_service_name: '{{ app_service_name }}'
+
+
+#?? Oauth2? SMTP cred? Mailgun?
+
+
+- name: "Install backend config"
+  template:
+    src: "application.yml.j2"
+    dest: "/etc/aces-marketplace-backend/application.yml"
+
+
+- name: "Install marketplace backend"
+  template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/aces-marketplace-backend.service
+
+- name: "Start marketplace backend"
+  systemd:
+    state: restarted
+    name: aces-marketplace-backend
+    daemon_reload: yes
+    enabled: yes
+
+- name: "Creates frontend directory"
+  file: path=/var/www/aces_marketplace state=directory
+
+- name: "Copy the generated static frontend application files"
+  command: cp -r /apps/aces-marketplace/frontend/dist/. /var/www/aces-marketplace/
+
+#?? sudo service nginx stop
+
+- name: "Setup nginx"
+  import_role:
+    name: nginx-proxy-letsencrypt
+  vars:
+    domain_name: '{{ base_url }}'
+    letsencrypt_email: '{{ letsencrypt_email }}'
+    app_port: '{{ app_port }}'
