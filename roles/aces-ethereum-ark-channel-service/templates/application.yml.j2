@@ -1,0 +1,28 @@
+serverInfo:
+  name: "{{ app_name }}"
+  description: {{ app_description }}
+  instructions: {{ instructions }}
+  version: "1.0.0"
+  websiteUrl: "{{ app_website }}"
+  flatFee: "{{ flat_fee_eth }}"
+  percentFee: "{{ percent_fee }}"
+
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/ark-network.yml"
+
+serviceArkAccount:
+  address: "{{ service_ark_account }}"
+  passphrase: "{{ service_ark_passphrase }}"
+
+fees:
+  ethFlatFee: "{{ flat_fee_eth }}""
+  ethPercentFee: "{{ percent_fee }}"
+
+server:
+  port: {{ app_port }}
+
+ethereumListener:
+  url: {{ ethereum_listener_url }}
+
+ethEventCallbackUrl: "http://localhost:{{ app_port }}/ethereumEvents"
+
+ethMinConfirmations: 1

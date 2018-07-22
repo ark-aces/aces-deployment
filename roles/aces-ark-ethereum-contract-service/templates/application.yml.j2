@@ -1,0 +1,44 @@
+serverInfo:
+  name: "{{ app_name }}"
+  description: {{ app_description }}
+  instructions: {{ instructions }}
+  version: "1.0.0"
+  websiteUrl: "{{ app_website }}"
+  flatFee: "{{ flat_fee }}"
+  percentFee: "{{ percent_fee }}"
+
+spring:
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
+    username: "{{database_user}}"
+    password: "{{database_password}}"
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/ark-network.yml"
+
+serviceEthAccount:
+  address: "{{ service_eth_address }}"
+  passphrase: "{{ service_eth_passphrase }}"
+
+serviceArkAccount:
+  address: "{{ service_ark_address }}"
+  passphrase: "{{ service_ark_passphrase }}"
+
+fees:
+  arkFlatFee: {{ flat_fee }}
+  arkPercentFee: {{ percent_fee }}
+
+server:
+  port: {{ app_port }}
+
+arkListener:
+  url: {{ ark_listener_url }}
+
+arkEventCallbackUrl: "http://localhost:{{ app_port }}/arkEvents"
+
+arkMinConfirmations: 4
+
+ethRpcRootUri: "{{ ethereum_rcp_url }}"
