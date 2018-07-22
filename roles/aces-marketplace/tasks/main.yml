@@ -48,9 +48,9 @@
     name: "spring-boot-app"
   vars:
     repo_name: "aces-marketplace"
-    app_port: '{{ app_port }}'
-    expose_port: '{{ expose_port }}'
-    app_service_name: '{{ app_service_name }}'
+    app_port: app_port
+    expose_port: expose_port
+    app_service_name: app_service_name
 
 
 #?? Oauth2? SMTP cred? Mailgun?
@@ -86,6 +86,6 @@
   import_role:
     name: nginx-proxy-letsencrypt
   vars:
-    domain_name: '{{ base_url }}'
-    letsencrypt_email: '{{ letsencrypt_email }}'
-    app_port: '{{ app_port }}'
+    domain_name: "{{ base_url }}"
+    letsencrypt_email: "{{ letsencrypt_email }}"
+    app_port: "{{ app_port }}"
