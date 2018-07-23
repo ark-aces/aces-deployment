@@ -14,7 +14,7 @@
       mail_password: change_me
       fromName: "ACES Marketplace"
       fromEmailAddress: aces-marketplace@example.com
-      base_url: https://aces-marketplace.example.com
+      base_url: https://aces-marketplace.example.com:8443
       recaptcha_secret: change_me
       recaptcha_site_key: change_me
       letsencrypt_email: aces-marketplace@example.com
