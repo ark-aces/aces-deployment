@@ -1,0 +1,38 @@
+server:
+  port: "{{ app_port }}"
+
+#to-do
+oauth2:
+  # Do not change oauth2 clientId/secret since they are hard coded into the marketplace frontend app.
+  # In the future, these may be configurable for different client app instances
+  clientId: "marketplace"
+  secret: "secret"
+  tokenValiditySeconds: 86400
+
+spring:
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
+    username: "{{database_user}}"
+    password: "{{database_password}}"
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+
+  mail:
+    host: "{{ mail_host }}"
+    port: "{{ mail_port }}"
+    username: "{{ mail_user }}"
+    password: "{{ mail_password }}"
+    properties:
+      mail.smtp.auth: true
+      mail.startttls.enable: true
+
+baseUrl: "{{ base_url }}"
+
+recaptcha:
+  secret: "{{ recaptcha_secret }}"
+
+email:
+  fromName: "{{ fromName }}"
+  fromEmailAddress: "{{ fromEmailAddress }}"
