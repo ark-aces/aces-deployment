@@ -1,7 +1,8 @@
 serverInfo:
   name: "{{ app_name }}"
   description: {{ app_description }}
-  instructions: {{ instructions }}
+  instructions: |
+    {{ instructions | indent(4) }}
   version: "1.0.0"
   websiteUrl: "{{ app_website }}"
   flatFee: "{{ flat_fee }}"

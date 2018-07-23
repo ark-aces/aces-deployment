@@ -8,7 +8,7 @@
     - role: ethereum
       ethereum_data_directory: /var/ethereum
       type: testnet-rinkeby
-    
+
     - role: aces-listener-ark
       app_port: 9091
       ark_network_config_file: configs/ark-networks/ark-mainnet.yml
@@ -43,11 +43,11 @@
         With this service, users are able to deploy Ethereum code contracts directly to the
         Ethereum network using Ark. Users supply compiled solidity contract code to the service
         and pay for deployment using an Ark wallet.
-      
+        
         Ethereum contract code and ABI interface can be obtained by compiling solidity code.
         If you are new to ethereum smart contracts, you can use the [Remix Solidity Web Compiler](https://remix.ethereum.org/)
         to obtain the required values for this service:
-      
+        
         * Enter the desired solidity code in the IDE editor window.
         * Choose "Contract details (bytecode, interface etc.)" to expand compiled information.
         * Copy bytecode and ABI interface JSON into the inputs below.
