@@ -1,0 +1,52 @@
+---
+- name: ensure apt cache is up to date
+  apt: update_cache=yes
+  
+- name: ensure packages are installed
+  apt: name={{item}}
+  with_items:
+    - nginx
+    - openssl
+    
+- name: "Add domain {{ domain_name }} to /etc/hosts"
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 {{ domain_name }}"
+    state: present
+  when: domain_name != "localhost"
+
+- name: "Ensures /etc/nginx/ssl/{{ domain_name}} dir exists"
+  file:
+    path: "/etc/nginx/ssl/{{ domain_name }}"
+    state: directory
+
+- name: Create self-signed SSL certificate
+  command: >
+    openssl req -new -nodes -x509 
+    -subj "/C=US/ST=Oregon/L=Portland/O=IT/CN={{ domain_name }}" 
+    -days 3650 
+    -keyout /etc/nginx/ssl/{{ domain_name }}/server.key 
+    -out /etc/nginx/ssl/{{ domain_name }}/server.crt 
+    -extensions v3_ca
+  args:
+    creates: "/etc/nginx/ssl/{{ domain_name }}/server.crt"
+
+- name: Remove default nginx config
+  file:
+    name: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Install system nginx config
+  template:
+    src: default-http.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ domain_name }}-http.conf"
+
+- name: Install nginx site with local setup
+  template:
+    src: default-https.conf.j2
+    dest: "/etc/nginx/sites-enabled/{{ domain_name }}-https.conf"
+
+- name: Reload nginx configuration
+  service:
+    name: nginx
+    state: restarted

@@ -1,21 +1,149 @@
 ---
-- name: ensure apt cache is up to date
+- debug: msg="marketplace app directory = {{ app_service_name }}"
+
+
+# Add java repository from PPA and install.
+- apt_repository:
+    repo: ppa:webupd8team/java
+# Frontend repos
+- apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: "ensure apt cache is up to date"
   apt: update_cache=yes
-  
-- name: ensure packages are installed
+
+- name: "ensure packages are installed"
   apt: name={{item}}
   with_items:
-    - postgresql
-    - postgresql-contrib
-    - python-psycopg2
+    - ufw
+    - oracle-java8-installer
+    - maven
+    - pwgen
     - nginx
+    - python-software-properties
+    # Frontend dependencies
+    - software-properties-common
+    - certbot
+    - git
 
-- name: ensure database is created
-  postgresql_db: name={{database_name}}
-  become: yes
-  become_user: postgres
 
-- name: ensure user has access to database
-  postgresql_user: db={{database_name}} name={{database_user}} password={{database_password}} priv=ALL
-  become: yes
-  become_user: postgres
+- name: Configure ufw rules
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  with_items:
+    - { rule: 'allow', port: '22', proto: 'tcp' }
+    - { rule: 'allow', port: '80', proto: 'tcp' }
+    - { rule: 'allow', port: '443', proto: 'tcp' }
+
+- name: "Install {{ app_service_name }} database"
+  import_role:
+    name: database
+  vars:
+    database_host: database_host
+    database_port: database_port
+    database_name: database_name
+    database_user: database_user
+    database_password: database_password
+  when: use_local_database == true
+
+- name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
+  file:
+    path: "/etc/opt/{{ app_service_name }}"
+    state: directory
+
+- name: "Install backend config"
+  template:
+    src: "application.yml.j2"
+    dest: "/etc/opt/{{ app_service_name }}/application.yml"
+
+
+
+
+
+- name: "Ensures /etc/opt/{{ app_service_name }}/backend dir exists"
+  file:
+    path: "/etc/opt/{{ app_service_name }}/backend"
+    state: directory
+
+- name: "Ensures /opt/{{ app_service_name }}/src dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/src"
+    state: directory
+
+- name:  "Clone aces-marketplace repository into /opt"
+  git:
+    repo: "https://github.com/ark-aces/aces-marketplace.git"
+    version: master
+    dest: "/opt/{{ app_service_name }}/src/"
+
+- name: "Ensures /opt/{{ app_service_name }}/bin dir exists"
+  file:
+    path: "/opt/{{ app_service_name }}/bin"
+    state: directory
+
+- name: "Build aces-marketplace application jar"
+  shell: |
+    /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
+    find ./target -name "*.jar" -exec cp {} /opt/{{ app_service_name }}/bin/{{ app_service_name }}.jar \;
+  args:
+    chdir: "/opt/{{ app_service_name }}/src/backend"
+
+- name: "Install {{ app_service_name }} service"
+  template:
+    src: application.service.j2
+    dest: "/etc/systemd/system/{{ app_service_name }}.service"
+
+- name: "Start {{ app_service_name }} service"
+  systemd:
+    state: restarted
+    name: "{{ app_service_name }}"
+    daemon_reload: yes
+    enabled: yes
+
+- name: "Wait for {{ app_service_name }} application to start up"
+  wait_for:
+    port: "{{ app_port }}"
+    delay: 1
+    timeout: 600
+
+- name: "Install frontend config"
+  template:
+    src: "environment.prod.ts.j2"
+    dest: "/opt/{{ app_service_name }}/src/frontend/src/environments/environment.prod.ts"
+
+- name: "Creates frontend directory"
+  file: "path=/var/www/{{ app_service_name }} state=directory"
+
+- name: install npm and build
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+    apt-get install nodejs
+    npm install
+    npm run-script build --prod --build-optimizer
+  args:
+    chdir: "/opt/{{ app_service_name }}/src/frontend"
+
+- name: "Copy the generated static frontend application files"
+  command: "cp -r /opt/{{ app_service_name }}/src/frontend/dist/. /var/www/{{ app_service_name}}/"
+
+- debug: msg="app_service_name = {{ app_service_name }}"
+
+- name: "Install nginx local directory for {{ app_service_name }}"
+  include_role:
+    name: nginx-directory-local
+  vars:
+    domain_name: domain_name
+    app_service_name: app_service_name
+    app_port: app_port
+  when: (use_letsencrypt == false)
+
+- name: "Install nginx letsencrypt directory for {{ app_service_name }}"
+  include_role:
+    name: nginx-directory-letsencrypt
+  vars:
+    domain_name: domain_name
+    letsencrypt_email: letsencrypt_email
+    app_service_name: app_service_name
+    app_port: app_port
+  when: (use_letsencrypt == true)
+
+- debug: msg="app_service_name = {{ app_service_name }}"
