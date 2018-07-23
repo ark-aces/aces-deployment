@@ -1,0 +1,23 @@
+server {
+    root /var/www/{{ app_service_name }}/;
+    server_name {{ domain_name }};
+
+     # Pass api requests to the ACES Marketplace backend app
+        location /api/ {
+            proxy_pass http://127.0.0.1:{{ app_port }}/;
+        }
+
+    # Serve ACES Marketplace frontend app directly
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/nginx/ssl/{{ domain_name }}/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/{{ domain_name }}/server.key;
+
+    if ($scheme != "https") {
+        return 301 https://$host$request_uri;
+    }
+
+}

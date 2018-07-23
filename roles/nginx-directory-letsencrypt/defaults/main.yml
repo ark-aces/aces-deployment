@@ -1,0 +1,5 @@
+---
+domain_name: example.com
+letsencrypt_email: change_me
+app_service_name: change_me
+app_port: 8081
