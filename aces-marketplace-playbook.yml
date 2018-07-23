@@ -2,10 +2,6 @@
 - import_playbook: setup-playbook.yml
 - hosts: aces-node-1
   become: true
-  vars:
-     database_name: aces_marketplace
-     database_user: aces_marketplace_user
-     database_password: change_me
   roles:
     - role: aces-common
     - role: aces-marketplace

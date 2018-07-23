@@ -52,13 +52,6 @@ ansible-playbook --verbose \
 ```
 
 
-ansible-playbook --verbose \
--u ubuntu \
---private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
--i ./inventory \
-./aces-ethereum-listener-playbook.yml
-
-
 ## Server Deployments
 
 1. Create your server instance on any cloud infrastructure provider and download the 

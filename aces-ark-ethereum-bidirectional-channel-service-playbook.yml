@@ -8,7 +8,7 @@
     - role: ethereum
       ethereum_data_directory: /var/ethereum
       type: testnet-rinkeby
-    
+
     - role: aces-listener-ark
       app_port: 9091
       ark_network_config_file: configs/ark-networks/ark-mainnet.yml

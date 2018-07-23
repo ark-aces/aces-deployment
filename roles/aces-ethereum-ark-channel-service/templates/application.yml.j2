@@ -14,7 +14,7 @@ serviceArkAccount:
   passphrase: "{{ service_ark_passphrase }}"
 
 fees:
-  ethFlatFee: "{{ flat_fee_eth }}""
+  ethFlatFee: "{{ flat_fee_eth }}"
   ethPercentFee: "{{ percent_fee }}"
 
 server:
@@ -26,3 +26,11 @@ ethereumListener:
 ethEventCallbackUrl: "http://localhost:{{ app_port }}/ethereumEvents"
 
 ethMinConfirmations: 1
+
+spring:
+  datasource:
+    url: "jdbc:h2:/opt/{{ app_service_name }}/{{ app_service_name }}.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+    driver-class-name: "org.h2.Driver"
+  jpa:
+    hibernate:
+      ddl-auto: "update"
