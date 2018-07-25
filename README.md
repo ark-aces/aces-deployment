@@ -63,7 +63,7 @@ of services depending on the needs of the service provider.
 The Ansible roles that provide web services (i.e ACES Listener and Services) have support 
 for exposing the web service in one of three different ways:
 
-##### Locally exposed HTTP port
+##### 1. Locally exposed HTTP port
 
 Using this option, the role provided web service is exposed locally on the application
 port. This option is best used to when the service is used directly over the 
@@ -85,7 +85,7 @@ expose_port: true
 ```
 
 
-##### Local domain with https using self-signed certs (default)
+##### 2. Local domain with https using self-signed certs (default)
 
 Using this option, services are given a domain name and the service is accessible
 directly using the domain name over https using self-signed certs. 
@@ -111,7 +111,7 @@ https://my-aces-service.example.com
 ```
 
 
-##### Public domain with https using LetsEncrypt
+##### 3. Public domain with https using LetsEncrypt
 
 Using this option, services are given a publicly registered domain name and https encryption
 is enabled using LetsEncrypt issues SSL certificates.
