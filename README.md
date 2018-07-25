@@ -58,6 +58,51 @@ of services depending on the needs of the service provider.
 
 ### Common Patterns
 
+### Application Port
+
+Each web service deployed to an ACES node must have a unique `app_port`
+defined in the playbook role parameters.
+
+The `app_port` parameter defines what TCP port the web service is exposed on. Only one application
+is allowed to listen on a given port, so every `app_port` defined in your playbook must be 
+unique. It is recommended that `app_ports` be an integer above `1024` since port numbers under
+`1024` are registered to common services that may already be running on a server (for example
+port 22 is normally reserved for SSH access).
+
+ACES Ansible roles use nginx web server reverse proxying to route port 80 (default http port) 
+and port 443 (default https port) to the underlying `app_port` defined for your service.
+
+
+### Application Service Name
+
+Each web service deployed to an ACES node must have a unique `app_service_name`
+defined in the playbook role parameters.
+
+ACES nodes use `systemd` to supervise services running on the server. Using `systemd`, 
+each service is identified uniquely using the role's `app_service_name` parameter.
+
+Inside the server, the service logs can be obtained using the `app_service_name` (replace
+`{{app_service_name}}` with your role configured `app_service_name`):
+
+```bash
+sudo journalctl -u {{app_service_name}} -f
+```
+
+Services can also be restarted, stopped, and started using `systemd`:
+
+```bash
+sudo service {{app_service_name}} restart
+```
+
+```bash
+sudo service {{app_service_name}} stop
+```
+
+```bash
+sudo service {{app_service_name}} start
+```
+
+
 #### Web Service Configurations
 
 The Ansible roles that provide web services (i.e ACES Listener and Services) have support 
@@ -82,6 +127,13 @@ machine when running services in a VM), set the `expose_port` option to `true`:
 
 ```yaml
 expose_port: true
+```
+
+You can then access the service using the following URL (where `{{app_port}}` is the tcp
+port configured at):
+
+```
+http://localhost/{{app_port}}
 ```
 
 
@@ -133,51 +185,6 @@ You can then access the service using the following URL:
 
 ```
 https://my-aces-service.example.com
-```
-
-
-### Application Port
-
-Each web service deployed to an ACES node must have a unique `app_port`
-defined in the playbook role parameters.
-
-The `app_port` parameter defines what TCP port the web service is exposed on. Only one application
-is allowed to listen on a given port, so every `app_port` defined in your playbook must be 
-unique. It is recommended that `app_ports` be an integer above `1024` since port numbers under
-`1024` are registered to common services that may already be running on a server (for example
-port 22 is normally reserved for SSH access).
-
-ACES Ansible roles use nginx web server reverse proxying to route port 80 (default http port) 
-and port 443 (default https port) to the underlying `app_port` defined for your service.
-
-
-### Application Service Name
-
-Each web service deployed to an ACES node must have a unique `app_service_name`
-defined in the playbook role parameters.
-
-ACES nodes use `systemd` to supervise services running on the server. Using `systemd`, 
-each service is identified uniquely using the role's `app_service_name` parameter.
-
-Inside the server, the service logs can be obtained using the `app_service_name` (replace
-`{{app_service_name}}` with your role configured `app_service_name`):
-
-```bash
-sudo journalctl -u {{app_service_name}} -f
-```
-
-Services can also be restarted, stopped, and started using `systemd`:
-
-```bash
-sudo service {{app_service_name}} restart
-```
-
-```bash
-sudo service {{app_service_name}} stop
-```
-
-```bash
-sudo service {{app_service_name}} start
 ```
 
 ### Creating A Playbook
