@@ -18,7 +18,7 @@ by following the [Ansible Installation Guide](https://docs.ansible.com/ansible/l
 Once Ansible is installed, you will need to also install the Ansible Galaxy packages 
 required by ACES deployments:
 
-```
+```bash
 ansible-galaxy install -r requirements.yml
 ```
 
@@ -73,14 +73,14 @@ is not exposed to the public, but the channel service is.
 
 Use this method by setting the `install_nginx_proxy` parameter to `false` in the role arguments: 
 
-```
+```yaml
 install_nginx_proxy: false
 ```
 
 To expose the port to outside traffic (for example to expose publicly or to the host 
 machine when running services in a VM), set the `expose_port` option to `true`:
 
-```
+```yaml
 expose_port: true
 ```
 
@@ -92,7 +92,7 @@ directly using the domain name over https using self-signed certs.
 
 Use this method by setting the following in the role arguments:
 
-```
+```yaml
 install_nginx_proxy: false
 use_letsencrypt: false
 domain_name: my-aces-service.example.com
@@ -100,7 +100,7 @@ domain_name: my-aces-service.example.com
 
 Add the following to your host machine's `/etc/hosts` file:
 
-```
+```bash
 127.0.0.1 my-aces-service.example.com
 ```
 
@@ -122,7 +122,7 @@ to verify ownership of the domain name.
 
 Use this method by setting the following in the role arguments:
 
-```
+```yaml
 install_nginx_proxy: true
 use_letsencrypt: true
 domain_name: my-aces-service.example.com
@@ -162,21 +162,21 @@ each service is identified uniquely using the role's `app_service_name` paramete
 Inside the server, the service logs can be obtained using the `app_service_name` (replace
 `{{app_service_name}}` with your role configured `app_service_name`):
 
-```
+```bash
 sudo journalctl -u {{app_service_name}} -f
 ```
 
 Services can also be restarted, stopped, and started using `systemd`:
 
-```
+```bash
 sudo service {{app_service_name}} restart
 ```
 
-```
+```bash
 sudo service {{app_service_name}} stop
 ```
 
-```
+```bash
 sudo service {{app_service_name}} start
 ```
 
@@ -246,7 +246,7 @@ Following the [Vagrant Installation Guide](https://www.vagrantup.com/docs/instal
 use the `Vagrantfile` in this repository to start a local Ubuntu 16.04 server to deploy
 your Ansible playbook to:
 
-```
+```bash
 vagrant up
 ```
 
@@ -256,14 +256,14 @@ and update the Ansible `inventory` file to match your VM's ssh host and port.
 Deploy your ACES node playbook to the Vagrant VM, by running the example `ansible-playbook`
 command below, replacing `{{playbook}}` with your playbook file:
 
-```
+```bash
 ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
 -i inventory {{playbook}}.yml
 ```
 
 Example:
 
-```
+```bash
 ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
 -i inventory aces-ark-listener-playbook.yml
 ```
@@ -287,7 +287,7 @@ following the [Ansible Working with Inventory Guide](https://docs.ansible.com/an
    
 4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key:
 
-    ```
+    ```bash
     ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
     -i inventory {{playbook}}.yml
     ```
