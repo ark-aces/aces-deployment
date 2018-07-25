@@ -256,14 +256,14 @@ and update the Ansible `inventory` file to match your VM's ssh host and port.
 Deploy your ACES node playbook to the Vagrant VM, by running the example `ansible-playbook`
 command below, replacing `{{playbook}}` with your playbook file:
 
-```shell
+```console
 ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
 -i inventory {{playbook}}.yml
 ```
 
 Example:
 
-```shell
+```console
 ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
 -i inventory aces-ark-listener-playbook.yml
 ```
@@ -287,7 +287,7 @@ following the [Ansible Working with Inventory Guide](https://docs.ansible.com/an
    
 4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key:
 
-    ```shell
+    ```console
     ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
     -i inventory {{playbook}}.yml
     ```
