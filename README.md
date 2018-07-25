@@ -161,7 +161,7 @@ https://my-aces-service.example.com
 #### 3. Public domain with https using LetsEncrypt
 
 Using this option, services are given a publicly registered domain name and https encryption
-is enabled using LetsEncrypt issues SSL certificates.
+is enabled using [LetsEncrypt](https://letsencrypt.org/) issued SSL certificates.
 
 You must create a DNS A record pointing your registered domain name to your server IP before
 running the Ansible deployment scripts since LetsEncrypt must ping the server externally
