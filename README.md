@@ -50,7 +50,7 @@ of services depending on the needs of the service provider.
 
 * [ACES Marketplace](roles/aces-marketplace)
 
-#### Blockchain Provider Roles
+#### Blockchain Service Roles
 
 * [Bitcoind](roles/bitcoind)
 * [Ethereum](roles/ethereum)
