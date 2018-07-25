@@ -12,13 +12,10 @@
 Install Ansible on the control machine (the machine which you will be deploying from) 
 by following the [Ansible Installation Guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 
-
-## Install Ansible Packages
-
 Once Ansible is installed, you will need to also install the Ansible Galaxy packages 
 required by ACES deployments:
 
-```bash
+```
 ansible-galaxy install -r requirements.yml
 ```
 
