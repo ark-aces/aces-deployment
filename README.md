@@ -53,9 +53,7 @@ of services depending on the needs of the service provider.
 * [Ethereum](roles/ethereum)
 
 
-### Common Patterns
-
-#### Application Port
+### Application Port
 
 Each web service deployed to an ACES node must have a unique `app_port`
 defined in the playbook role parameters.
@@ -70,7 +68,7 @@ ACES Ansible roles use nginx web server reverse proxying to route port 80 (defau
 and port 443 (default https port) to the underlying `app_port` defined for your service.
 
 
-#### Application Service Name
+### Application Service Name
 
 Each web service deployed to an ACES node must have a unique `app_service_name`
 defined in the playbook role parameters.
@@ -100,12 +98,12 @@ sudo service {{app_service_name}} start
 ```
 
 
-#### Web Service Configurations
+### Web Service Configurations
 
 The Ansible roles that provide web services (i.e ACES Listener and Services) have support 
 for exposing the web service in one of three different ways:
 
-##### 1. Locally exposed HTTP port
+#### 1. Locally exposed HTTP port
 
 Using this option, the role provided web service is exposed locally on the application
 port. This option is best used to when the service is used directly over the 
@@ -134,7 +132,7 @@ http://localhost/{{app_port}}
 ```
 
 
-##### 2. Local domain with https using self-signed certs (default)
+#### 2. Local domain with https using self-signed certs (default)
 
 Using this option, services are given a domain name and the service is accessible
 directly using the domain name over https using self-signed certs. 
@@ -160,7 +158,7 @@ https://my-aces-service.example.com
 ```
 
 
-##### 3. Public domain with https using LetsEncrypt
+#### 3. Public domain with https using LetsEncrypt
 
 Using this option, services are given a publicly registered domain name and https encryption
 is enabled using LetsEncrypt issues SSL certificates.
