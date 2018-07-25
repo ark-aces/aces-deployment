@@ -290,7 +290,7 @@ following the [Ansible Working with Inventory Guide](https://docs.ansible.com/an
 4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key:
 
     ```
-    ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
+    ansible-playbook -u {{user}} --private-key={{private_key_file}} \
     -i inventory {{playbook}}.yml
     ```
 
