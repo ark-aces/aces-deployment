@@ -31,13 +31,13 @@ of services depending on the needs of the service provider.
 
 ### Roles
 
-## ACES Listener Roles
+#### ACES Listener Roles
 
 * [ACES Ark Listener](roles/aces-listener-ark)
 * [ACES Bitcoin Listener](roles/aces-listener-bitcoin)
 * [ACES Ethereum Listener](roles/aces-listener-ethereum)
 
-## ACES Service Roles
+#### ACES Service Roles
 
 * [ACES Ark-Bitcoin Channel Service](roles/aces-ark-bitcoin-channel-service)
 * [ACES Ark-Ethereum Channel Service](roles/aces-ark-ethereum-channel-service)
@@ -46,11 +46,11 @@ of services depending on the needs of the service provider.
 * [ACES Bitcoin-Ark Channel Service](roles/aces-bitcoin-ark-channel-service)
 * [ACES Ethereum-Ark Channel Service](roles/aces-ethereum-ark-channel-service)
 
-## ACES Marketplace Role
+#### ACES Marketplace Role
 
 * [ACES Marketplace](roles/aces-marketplace)
 
-## Blockchain Provider Roles
+#### Blockchain Provider Roles
 
 * [Bitcoind](roles/bitcoind)
 * [Ethereum](roles/ethereum)
