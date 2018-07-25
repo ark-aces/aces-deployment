@@ -29,13 +29,15 @@ This repository provides Ansible roles for deploying all the key components of a
 Ansible roles can be combined and configured to deploy ACES nodes with different compositions
 of services depending on the needs of the service provider.
 
-### ACES Listener Roles
+### Roles
+
+## ACES Listener Roles
 
 * [ACES Ark Listener](roles/aces-listener-ark)
 * [ACES Bitcoin Listener](roles/aces-listener-bitcoin)
 * [ACES Ethereum Listener](roles/aces-listener-ethereum)
 
-### ACES Service Roles
+## ACES Service Roles
 
 * [ACES Ark-Bitcoin Channel Service](roles/aces-ark-bitcoin-channel-service)
 * [ACES Ark-Ethereum Channel Service](roles/aces-ark-ethereum-channel-service)
@@ -44,24 +46,24 @@ of services depending on the needs of the service provider.
 * [ACES Bitcoin-Ark Channel Service](roles/aces-bitcoin-ark-channel-service)
 * [ACES Ethereum-Ark Channel Service](roles/aces-ethereum-ark-channel-service)
 
-### ACES Marketplace Role
+## ACES Marketplace Role
 
 * [ACES Marketplace](roles/aces-marketplace)
 
-### Blockchain Provider Roles
+## Blockchain Provider Roles
 
 * [Bitcoind](roles/bitcoind)
 * [Ethereum](roles/ethereum)
 
 
-## Common Patterns
+### Common Patterns
 
-### Web Service Configurations
+#### Web Service Configurations
 
 The Ansible roles that provide web services (i.e ACES Listener and Services) have support 
 for exposing the web service in one of three different ways:
 
-#### Locally exposed HTTP port
+##### Locally exposed HTTP port
 
 Using this option, the role provided web service is exposed locally on the application
 port. This option is best used to when the service is used directly over the 
@@ -83,7 +85,7 @@ expose_port: true
 ```
 
 
-#### Local domain with https using self-signed certs (default)
+##### Local domain with https using self-signed certs (default)
 
 Using this option, services are given a domain name and the service is accessible
 directly using the domain name over https using self-signed certs. 
@@ -109,7 +111,7 @@ https://my-aces-service.example.com
 ```
 
 
-#### Public domain with https using LetsEncrypt
+##### Public domain with https using LetsEncrypt
 
 Using this option, services are given a publicly registered domain name and https encryption
 is enabled using LetsEncrypt issues SSL certificates.
@@ -178,6 +180,42 @@ sudo service {{app_service_name}} stop
 sudo service {{app_service_name}} start
 ```
 
+### Creating A Playbook
+
+Create an Ansible playbook for your ACES node deployment by copying the following template
+into a file `my-aces-node-playbook.yml`:
+
+```yaml
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node-1
+  become: true
+  roles:
+    - role: aces-common
+```
+
+Roles availble can be found in the `roles` directory. Each role has a number of configurable
+parameters under the role directory's `defaults/main.yml` configuration file. When adding a 
+new role to your playbook, just copy all the paramters under `defaults/main.yml` under your
+playbooks role and change the values as desired.
+
+```yaml
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node-1
+  become: true
+  roles:
+    - role: aces-common
+    - role: bitcoind
+      bitcoind_data_directory: /var/bitcoin
+      bitcoind_rpc_user: my-bitcoin-rcp-user
+      bitcoind_rpc_password: my-super-secure-bitcoind-rpc-password
+      is_testnet: true
+```
+
+See example playbooks in the next section for more examples.
+
+
 ## Example Playbooks
 
 Each ACES node can be configured to run different services depending on the needs of 
@@ -219,21 +257,15 @@ Deploy your ACES node playbook to the Vagrant VM, by running the example `ansibl
 command below, replacing `{{playbook}}` with your playbook file:
 
 ```
-ansible-playbook --verbose \
--u ubuntu \
---private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
--i ./inventory \
-./{{playbook}}.yml
+ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
+-i inventory {{playbook}}.yml
 ```
 
 Example:
 
 ```
-ansible-playbook --verbose \
--u ubuntu \
---private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
--i ./inventory \
-./aces-ark-listener-playbook.yml
+ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
+-i inventory aces-ark-listener-playbook.yml
 ```
 
 
@@ -256,11 +288,8 @@ following the [Ansible Working with Inventory Guide](https://docs.ansible.com/an
 4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key:
 
     ```
-    ansible-playbook --verbose \
-    -u ubuntu \
-    --private-key=./.vagrant/machines/aces-node-1/virtualbox/private_key \
-    -i ./inventory \
-    ./{{playbook}}.yml
+    ansible-playbook -u ubuntu --private-key=.vagrant/machines/aces-node-1/virtualbox/private_key \
+    -i inventory {{playbook}}.yml
     ```
 
 
