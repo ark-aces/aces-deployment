@@ -58,7 +58,7 @@ of services depending on the needs of the service provider.
 
 ### Common Patterns
 
-### Application Port
+#### Application Port
 
 Each web service deployed to an ACES node must have a unique `app_port`
 defined in the playbook role parameters.
@@ -73,7 +73,7 @@ ACES Ansible roles use nginx web server reverse proxying to route port 80 (defau
 and port 443 (default https port) to the underlying `app_port` defined for your service.
 
 
-### Application Service Name
+#### Application Service Name
 
 Each web service deployed to an ACES node must have a unique `app_service_name`
 defined in the playbook role parameters.
