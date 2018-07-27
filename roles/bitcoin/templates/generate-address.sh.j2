@@ -1,0 +1,30 @@
+#!/bin/bash
+
+command="bitcoin-cli -datadir={{ bitcoind_data_directory }} getnewaddress"
+max_sleep_sec=60
+sleep_sec=10
+
+result=`$command`
+status=$?
+total_sleep_sec=0
+while [ $status -ne 0 ]; do
+  if [ $total_sleep_sec -gt $max_sleep_sec ]; then
+    echo "Took too long to generate bitcoin address, giving up now!"
+    exit 1;
+  fi
+
+  echo "Generate address failed due to bitcoind loading block index, retrying in 1 sec..."
+  echo "$result"
+  
+  sleep $sleep_sec
+  total_sleep_sec=$(($total_sleep_sec + $sleep_sec))
+  
+  result=`$command`
+  status=$?
+done
+
+cat > /etc/ansible/facts.d/bitcoin.fact <<EOF
+{
+    "address" : "$result"
+}
+EOF

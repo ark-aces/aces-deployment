@@ -1,0 +1,16 @@
+---
+- hosts: aces-node
+  become: true
+  roles:
+    - role: bitcoin
+      bitcoind_data_directory: /var/bitcoin
+      bitcoind_rpc_user: bitcoinrpc
+      bitcoind_rpc_password: change_me
+      is_testnet: true
+
+- hosts: aces-node
+  become: true
+  tasks:
+    - name: Service bitcoin wallet address
+      debug:
+        msg: "{{ ansible_local.bitcoin.address }}"

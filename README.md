@@ -49,7 +49,7 @@ of services depending on the needs of the service provider.
 
 #### Blockchain Service Roles
 
-* [Bitcoind](roles/bitcoind)
+* [Bitcoin](roles/bitcoin)
 * [Ethereum](roles/ethereum)
 
 
@@ -208,7 +208,7 @@ playbooks role and change the values as desired.
   become: true
   roles:
     - role: aces-common
-    - role: bitcoind
+    - role: bitcoin
       bitcoind_data_directory: /var/bitcoin
       bitcoind_rpc_user: my-bitcoin-rcp-user
       bitcoind_rpc_password: my-super-secure-bitcoind-rpc-password

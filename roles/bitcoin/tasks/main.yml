@@ -1,6 +1,4 @@
 ---
-- debug: msg="bitcoind_data_directory = {{ bitcoind_data_directory }}"
-
 - apt_repository:
     repo: ppa:bitcoin/bitcoin
     state: present
@@ -34,3 +32,34 @@
     name: bitcoind
     daemon_reload: yes
     enabled: yes
+
+- name: Ensure /opt/bitcoin/ directory exists
+  file:
+    path: /opt/bitcoin
+    recurse: yes
+    state: directory
+
+- name: Ensure local facts directory exists
+  file:
+    path: /etc/ansible/facts.d
+    recurse: yes
+    state: directory
+    
+- name: Install bitcoin wallet generation script
+  template:
+    src: generate-address.sh.j2
+    dest: /opt/bitcoin/generate-address.sh
+    mode: 0755
+
+- name: Generate bitcoin wallet
+  shell: /opt/bitcoin/generate-address.sh
+  when: ansible_local.bitcoin is not defined
+
+- name: Reload ansible_local facts
+  setup:
+    filter: ansible_local
+  when: ansible_local.bitcoin is not defined
+
+- name: Generated bitcoin wallet address
+  debug:
+    msg: "{{ ansible_local.bitcoin.address }}"

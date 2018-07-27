@@ -5,7 +5,7 @@
   roles:
     - role: aces-common
     
-    - role: bitcoind
+    - role: bitcoin
       bitcoind_data_directory: /var/bitcoin
       bitcoind_rpc_user: bitcoinrpc
       bitcoind_rpc_password: change_me
