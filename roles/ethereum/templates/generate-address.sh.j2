@@ -1,0 +1,23 @@
+#!/bin/bash
+
+passphrase=`pwgen -1 -n 32`
+echo "$passphrase" > /opt/ethereum/pwgen.txt
+
+command="geth account new --datadir {{ ethereum_data_directory }} --password /opt/ethereum/pwgen.txt"
+response=`$command`
+
+# Geth returns the address in like "Address: {25c4343447184640ec9eb94af7bb7a313c34f85c}"
+pattern='^Address: \{(.+)\}$'
+if [[ $response =~ $pattern ]]; then
+    address="0x${BASH_REMATCH[1]}"
+else
+    echo "Failed to generate ethereum wallet"
+    exit 1
+fi
+
+cat > /etc/ansible/facts.d/ethereum.fact <<EOF
+{
+    "address" : "$address",
+    "passphrase": "$passphrase"
+}
+EOF

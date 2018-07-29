@@ -1,5 +1,5 @@
 ---
-# Type of network to run: "mainnet", "testnet-rinkeby", or "dev" 
+# Type of network to run: "mainnet", "testnet-rinkeby", "testnet-ropstein", or "dev"
 type: testnet-rinkeby
 
 # Data directory to sync blockchain too

@@ -1,0 +1,15 @@
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node
+  become: true
+  roles:
+    - role: ethereum
+      ethereum_data_directory: /var/ethereum
+      type: testnet-rinkeby
+
+- hosts: aces-node
+  become: true
+  tasks:
+    - name: Service ethereum wallet
+      debug:
+        msg: "address={{ ansible_local.ethereum.address }}, passphrase={{ ansible_local.ethereum.passphrase }}"

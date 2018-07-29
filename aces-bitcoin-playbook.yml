@@ -1,4 +1,5 @@
 ---
+- import_playbook: setup-playbook.yml
 - hosts: aces-node
   become: true
   roles:
@@ -11,6 +12,6 @@
 - hosts: aces-node
   become: true
   tasks:
-    - name: Service bitcoin wallet address
+    - name: Service bitcoin wallet
       debug:
-        msg: "{{ ansible_local.bitcoin.address }}"
+        msg: "address={{ ansible_local.bitcoin.address }}"

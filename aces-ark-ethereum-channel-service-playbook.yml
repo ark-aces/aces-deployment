@@ -34,10 +34,17 @@
       app_website: https://arkaces.com
       ark_listener_url: http://localhost:9091
       ethereum_rcp_url: http://127.0.0.1:8545
-      service_eth_address: change_me
-      service_eth_passphrase: change_me
+      service_eth_address: "{{ ansible_local.ethereum.address }}"
+      service_eth_passphrase: "{{ ansible_local.ethereum.passphrase }}"
       flat_fee: 0
       percent_fee: 0
       instructions: >
         After this contract is executed, any ARK sent to depositArkAddress will be exchanged for 
         ETH and sent directly to the given recipientEthAddress with no additional fees.
+
+- hosts: aces-node
+  become: true
+  tasks:
+  - name: Service ethereum wallet
+    debug:
+        msg: "address={{ ansible_local.ethereum.address }}, passphrase={{ ansible_local.ethereum.passphrase }}"

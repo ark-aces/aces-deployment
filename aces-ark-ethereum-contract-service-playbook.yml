@@ -33,8 +33,8 @@
       app_website: https://arkaces.com
       ark_listener_url: http://localhost:9091
       ethereum_rcp_url: http://127.0.0.1:8545
-      service_eth_address: change_me
-      service_eth_passphrase: change_me
+      service_eth_address: "{{ ansible_local.ethereum.address }}"
+      service_eth_passphrase: "{{ ansible_local.ethereum.passphrase }}"
       service_ark_address: change_me
       service_ark_passphrase: change_me
       flat_fee: 0
@@ -52,3 +52,10 @@
         * Choose "Contract details (bytecode, interface etc.)" to expand compiled information.
         * Copy bytecode and ABI interface JSON into the inputs below.
         * If contract has constructor parameters, enter them below in a JSON array.
+
+- hosts: aces-node
+  become: true
+  tasks:
+  - name: Service ethereum wallet
+    debug:
+      msg: "address={{ ansible_local.ethereum.address }}, passphrase={{ ansible_local.ethereum.passphrase }}"

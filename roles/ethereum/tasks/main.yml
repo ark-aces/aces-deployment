@@ -13,6 +13,7 @@
   with_items:
     - ethereum
     - solc
+    - pwgen
 
 - name: "Ensures {{ ethereum_data_directory }} dir exists"
   file:
@@ -30,3 +31,36 @@
     name: geth
     daemon_reload: yes
     enabled: yes
+
+
+- name: Ensure /opt/ethereum/ directory exists
+  file:
+    path: /opt/ethereum
+    recurse: yes
+    state: directory
+
+- name: Ensure local facts directory exists
+  file:
+    path: /etc/ansible/facts.d
+    recurse: yes
+    state: directory
+
+- name: Install ethereum wallet generation script
+  template:
+    src: generate-address.sh.j2
+    dest: /opt/ethereum/generate-address.sh
+    mode: 0755
+
+- name: Generate ethereum wallet
+  shell: /opt/ethereum/generate-address.sh
+  when: ansible_local.ethereum is not defined
+
+- name: Reload ansible_local facts
+  setup:
+    filter: ansible_local
+  when: ansible_local.ethereum is not defined
+
+- name: Generated ethereum wallet
+  debug:
+    msg: "address={{ ansible_local.ethereum.address }}, passphrase={{ ansible_local.ethereum.passphrase }}"
+
