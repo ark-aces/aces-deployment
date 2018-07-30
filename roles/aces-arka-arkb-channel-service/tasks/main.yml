@@ -34,7 +34,7 @@
   import_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-listener-ark"
+    repo_name: "aces-arka-arkb-channel-service"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name
