@@ -4,7 +4,7 @@ Description=geth rikeby testnet
 [Service]
 Restart=always
 ExecStart=/usr/bin/geth --rinkeby --rpc --rpcaddr=127.0.0.1 --rpcapi 'web3,eth,personal' --rpccorsdomain="*" \
---datadir={{ ethereum_data_directory }} --sync-mode=light --cache=1024
+--datadir={{ ethereum_data_directory }} --syncmode "fast" --cache=1024
 
 [Install]
 WantedBy=multi-user.target
