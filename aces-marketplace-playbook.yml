@@ -4,6 +4,9 @@
   become: true
   roles:
     - role: aces-common
+    - role: tecris.maven
+      maven_major: 3
+      maven_version: 3.5.4
     - role: aces-marketplace
       app_service_name: aces-marketplace
       app_password: change_me
@@ -26,5 +29,3 @@
       database_password: change_me
       use_local_database: true
       domain_name: aces-marketplace.example.com
-
-

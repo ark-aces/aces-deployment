@@ -1,39 +1,18 @@
 ---
-- name: ensure apt cache is up to date
-  apt: update_cache=yes
-  
-- name: ensure packages are installed
-  apt: name={{item}}
-  with_items:
-    - git
-    
 - name: "Ensures /etc/opt/{{ app_service_name }}/ dir exists"
   file:
     path: "/etc/opt/{{ app_service_name }}"
     state: directory
-
-- name: "Ensures /opt/{{ app_service_name }}/src dir exists"
-  file:
-    path: "/opt/{{ app_service_name }}/src"
-    state: directory
-  
-- name:  "Clone {{ repo_name }} repository into /opt"
-  git:
-    repo: "https://github.com/ark-aces/{{ repo_name }}.git"
-    version: master
-    dest: "/opt/{{ app_service_name }}/src/"
     
 - name: "Ensures /opt/{{ app_service_name }}/bin dir exists"
   file:
     path: "/opt/{{ app_service_name }}/bin"
     state: directory
 
-- name: "Build {{ repo_name }} application jar"
-  shell: |
-    /opt/apache-maven-3.5.4/bin/mvn clean package -DskipTests
-    find ./target -name "*.jar" -exec cp {} /opt/{{ app_service_name }}/bin/{{ app_service_name }}.jar \;
-  args:
-    chdir: "/opt/{{ app_service_name }}/src/"
+- name: "Download {{ jar_name }} application jar"
+  get_url:
+    url: "https://arkaces.com/aces-packages/{{ jar_name }}"
+    dest: "/opt/{{ app_service_name }}/bin/{{ app_service_name }}.jar"
 
 - name: "Install {{ app_service_name }} service"
   template:

@@ -29,7 +29,7 @@
   include_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-ark-ethereum-contract-service"
+    jar_name: "ark_ethereum_contract_service-1.0.0.jar"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name

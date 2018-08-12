@@ -29,7 +29,7 @@
   include_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-bitcoin-ark-channel-service"
+    app_jar: "bitcoin_ark_channel_service-1.1.0.jar"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name

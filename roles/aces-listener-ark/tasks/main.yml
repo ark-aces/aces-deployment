@@ -18,7 +18,7 @@
   import_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-listener-ark"
+    jar_name: "aces_listener_ark-1.0.0.jar"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name

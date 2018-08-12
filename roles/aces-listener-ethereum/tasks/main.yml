@@ -13,7 +13,7 @@
   include_role:
     name: "spring-boot-app"
   vars:
-    repo_name: "aces-listener-ethereum"
+    jar_name: "aces_listener_ethereum-1.0.0-SNAPSHOT.jar"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name
