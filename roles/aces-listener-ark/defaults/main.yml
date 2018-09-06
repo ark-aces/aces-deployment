@@ -1,6 +1,12 @@
 ---
 app_port: 9091
 expose_port: false
+use_local_database: true
+database_host: localhost
+database_port: 5432
+database_name: aces_arka_arkb_channel_service_db
+database_user: aces_arka_arkb_channel_service_user
+database_password: change_me
 install_nginx_proxy: true
 domain_name: localhost
 use_letsencrypt: false
