@@ -284,10 +284,19 @@ ssh keys for your user:
 2. Create an Ansible inventory file and configure it to point to your remote server by
 following the [Ansible Working with Inventory Guide](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html)
 
+Example:
+```
+aces-node-1 ansible_port=22 ansible_host=34.217.64.87
+
+[aces-node]
+aces-node-1
+```
+
+
 3. Create an Ansible playbook for your desired configuration by composing the provided roles with your 
    custom parameters
    
-4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key:
+4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key. If using defaults, your user will be 'ubuntu'
 
     ```
     ansible-playbook -u {{user}} --private-key={{private_key_file}} \
