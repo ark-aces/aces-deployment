@@ -296,7 +296,7 @@ aces-node-1
 3. Create an Ansible playbook for your desired configuration by composing the provided roles with your 
    custom parameters
    
-4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key. If using defaults, your user will be 'ubuntu'
+4. Run your playbook with `ansbile-playbook`, providing your Ansible inventory and ssh key. If using defaults, your user will be 'ubuntu'. Use the .pem file provided by AWS or any other provider you used.
 
     ```
     ansible-playbook -u {{user}} --private-key={{private_key_file}} \
