@@ -34,7 +34,7 @@
   import_role:
     name: "spring-boot-app"
   vars:
-    jar_name: "arka_arkb_channel_service-1.3.0.jar"
+    jar_name: "arka_arkb_channel_service-1.4.1.jar"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name
