@@ -28,3 +28,7 @@ arka_per_arkb_rate: 100
 instructions: >
   After this contract is executed, any ARK sent to depositArkaAddress will be exchanged for 
   DARK and sent directly to the given recipientArkbAddress with no additional fees. 1 ARK = 100 DARK
+arka_address_url_template: "https://explorer.ark.io/address/{value}"
+arka_transaction_url_template: "https://explorer.ark.io/transaction/{value}"
+arkb_address_url_template: "https://explorer.ark.io/address/{value}"
+arkb_transaction_url_template: "https://explorer.ark.io/transaction/{value}"

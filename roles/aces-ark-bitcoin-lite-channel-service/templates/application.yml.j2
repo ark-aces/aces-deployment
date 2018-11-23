@@ -1,0 +1,202 @@
+server:
+  port: {{ app_port }}
+
+spring:
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
+    username: "{{database_user}}"
+    password: "{{database_password}}"
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+    properties:
+      hibernate.temp.use_jdbc_metadata_defaults: false
+  mail:
+    host: "change-me"
+    port: 587
+    username: "change-me"
+    password: "change-me"
+    properties:
+      mail.smtp.auth: true
+      mail.startttls.enable: true
+
+serverInfo:
+  name: "{{ app_name }}"
+  description: {{ app_description }}
+  instructions: |
+    {{ instructions | indent(4) }}
+  version: "1.0.0"
+  websiteUrl: "{{ app_website }}"
+  inputSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "recipientBtcAddress": {
+          "type": "string",
+          "title": "Recipient BTC Address",
+          "description": "Enter recipient BTC address to transfer funds to."
+        },
+         "returnArkAddress": {
+            "type": "string",
+            "title": "Return ARK Address",
+            "description": "Enter return ARK address to send returns to."
+          }
+      },
+      "required": [
+        "recipientBtcAddress"
+      ]
+    }
+  outputSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "depositArkAddress": {
+          "type": "string",
+          "title": "Deposit ARK Address",
+          "description": "Send ARK to this address to execute contract."
+        },
+        "recipientBtcAddress": {
+          "type": "string",
+          "title": "Recipient BTC Address",
+          "description": "BTC will arrive at this address on contract execution."
+        },
+        "returnArkAddress": {
+          "type": "string",
+          "title": "Return ARK Address",
+          "description": "Returned ARK amounts are sent to this address."
+        },
+        "transfers": {
+          "type": "array",
+          "properties": {
+            "id": {
+                "type": "string",
+                "title": "Transfer ID",
+                "description": "Identifier for transfer"
+            },
+            "status": {
+                "type": "string",
+                 "title": "Status",
+                 "description": "The status of the transfer"
+            },
+            "createdAt": {
+              "type": "string",
+              "title": "Create Date",
+              "description": "The time the contract was created."
+            },
+            "arkTransactionId": {
+              "type": "string",
+              "title": "Transaction ID (ARK)",
+              "description": "The transaction ID for the ARK contract fulfillment"
+            },
+            "arkAmount": {
+              "type": "string",
+              "title": "Transfer Amount (ARK)",
+              "description": "The amount of ARK to transfer"
+            },
+            "arkToBtcRate": {
+              "type": "string",
+              "title": "BTC/ARK Exchange Rate",
+              "description": "Amount of BTC to receive per ARK"
+            },
+            "arkFlatFee": {
+              "type": "string",
+              "title": "Flat Fee (ARK)",
+              "description": "Fixed fee per execution, charged in ARK"
+            },
+            "arkPercentFee": {
+              "type": "string",
+              "title": "Percentage Fee (ARK)",
+              "description": "Percentage fee per execution, charged in ARK"
+            },
+            "arkTotalFee": {
+              "type": "string",
+              "title": "Total Fees (ARK)",
+              "description": "The sum of flat fees and percentage fees, charged in ARK"
+            },
+            "btcSendAmount": {
+              "type": "string",
+              "title": "Receiving Amount (BTC)",
+              "Description": "Total BTC to be received, net of fees"
+            },
+            "btcTransactionId": {
+              "type": "string",
+              "title": "Transaction ID (BTC)",
+              "description": "The transaction ID for the BTC contract fulfillment"
+            },
+            "returnArkTransactionId": {
+              "type": "string",
+              "title": "Return Transaction ID (ARK)",
+              "description": "The transaction ID for the ARK contract return"
+            }
+          }
+        }
+      }
+    }
+  outputSchemaUrlTemplates:
+    -
+      property: "depositArkAddress"
+      urlTemplate: "https://explorer.ark.io/transaction/{value}"
+    -
+      property: "returnArkAddress"
+      urlTemplate: "https://explorer.ark.io/transaction/{value}"
+    -
+      property: "recipientBtcAddress"
+      urlTemplate: "https://live.blockcypher.com/btc/tx/{value}/"
+    -
+      property: "transfers.arkTransactionId"
+      urlTemplate: "https://explorer.ark.io/transaction/{value}"
+    -
+      property: "transfers.btcTransactionId"
+      urlTemplate: "https://live.blockcypher.com/btc/tx/{value}/"
+    -
+      property: "transfers.returnArkTransactionId"
+      urlTemplate: "https://explorer.ark.io/transaction/{value}"
+
+
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/ark-network.yml"
+
+capacityUnit: "BTC"
+
+capacityUpdateIntervalSec: 3600
+
+arkScanIntervalSec: 60
+arkScanDepth: 50
+
+flatFee: {{ flat_fee }}
+flatFeeUnit: "ARK"
+
+percentFee: {{ percent_fee }}
+
+serviceArkAccount:
+  address: "{{ service_ark_address }}"
+  passphrase: "{{ service_ark_passphrase }}"
+
+serviceBitcoinAccount:
+  privateKey: "{{ service_bitcoin_private_key_base58 }}"
+
+arkMinConfirmations: 1
+
+electrumNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/electrum-network.yml"
+
+exchangeRate:
+  # CryptoCompare Currency symbol to exchange from
+  fromSymbol: "ARK"
+
+  # CryptoCompare Currency symbol to exchange to
+  toSymbol: "BTC"
+
+  # A rate multiplier (for testing purposes if using non-mainnet coins)
+  multiplier: 1
+
+  # Bypass CryptoCompare API by providing a hard-coded fixedRate
+  #fixedRate: 10.0
+
+# Send notifications on low capacity and transfer completed/failed
+notifications:
+  enabled: false
+  recipientEmailAddress: "change_me"
+  fromEmailAddress: "change_me"
+
+# Capacity threshold at which low capacity notifications will be sent
+lowCapacityThreshold: "100.00"

@@ -1,0 +1,33 @@
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node
+  become: true
+  roles:
+    - role: aces-common
+
+    - role: aces-ark-bitcoin-lite-channel-service
+      app_port: 9190
+      expose_port: false
+      use_local_database: true
+      database_host: localhost
+      database_port: 5432
+      database_name: aces_ark_bitcoin_channel_service_db
+      database_user: aces_ark_bitcoin_channel_service_user
+      database_password: change_me
+      domain_name: ark-bitcoin-channel-service.example.com
+      use_letsencrypt: false
+      letsencrypt_email: change_me
+      ark_network_config_file: configs/ark-mainnet.yml
+      electrum_network_config_file: configs/electrum-mainnet.yml
+      app_service_name: aces-ark-bitcoin-lite-channel-service
+      app_name: ACES ARK-BTC Lite Channel Service
+      app_description: ACES ARK-BTC Lite Channel Service
+      app_website: https://arkaces.com
+      flat_fee: 0
+      percent_fee: 0
+      instructions: >
+        After this contract is executed, any ARK sent to depositArkAddress will be exchanged for
+        BTC and sent directly to the given recipientBtcAddress.
+      service_ark_address: change_me
+      service_ark_passphrase: change_me
+      service_bitcoin_private_key_base58: change_me

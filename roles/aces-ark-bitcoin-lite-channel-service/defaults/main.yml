@@ -1,0 +1,27 @@
+---
+app_port: 9190
+expose_port: false
+use_local_database: true
+database_host: localhost
+database_port: 5432
+database_name: aces_bitcoin_ark_lite_channel_service_db
+database_user: aces_bitcoin_ark_lite_channel_service_user
+database_password: change_me
+install_nginx_proxy: true
+domain_name: bitcoin-ark-channel-service.example.com
+use_letsencrypt: false
+letsencrypt_email: change_me
+ark_network_config_file: configs/ark-mainnet.yml
+electrum_network_config_file: configs/electrum-mainnet.yml
+app_service_name: aces-bitcoin-ark-lite-channel-service
+app_name: ACES BTC-ARK Lite Channel Service
+app_description: ACES BTC-ARK Lite Channel Service
+app_website: https://arkaces.com
+flat_fee: 0
+percent_fee: 0
+instructions: >
+  After this contract is executed, any BTC sent to depositBtcAddress will be exchanged for
+  ARK and sent directly to the given recipientArkAddress.
+service_ark_address: change_me
+service_ark_passphrase: change_me
+service_bitcoin_private_key_base58: change_me

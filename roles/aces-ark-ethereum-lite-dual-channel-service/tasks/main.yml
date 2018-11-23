@@ -15,15 +15,10 @@
     path: "/etc/opt/{{ app_service_name }}"
     state: directory
 
-- name: "Install {{ app_service_name }} arka network config"
+- name: "Install {{ app_service_name }} ark network config"
   copy:
-    src: "{{ arka_network_config_file }}"
-    dest: "/etc/opt/{{ app_service_name }}/arka-network.yml"
-
-- name: "Install {{ app_service_name }} arkb network config"
-  copy:
-    src: "{{ arka_network_config_file }}"
-    dest: "/etc/opt/{{ app_service_name }}/arkb-network.yml"
+    src: "{{ ark_network_config_file }}"
+    dest: "/etc/opt/{{ app_service_name }}/ark-network.yml"
     
 - name: "Install {{ app_service_name }} application config"
   template:
@@ -31,10 +26,10 @@
     dest: "/etc/opt/{{ app_service_name }}/application.yml"
  
 - name: "Install {{ app_service_name }} application"
-  import_role:
+  include_role:
     name: "spring-boot-app"
   vars:
-    jar_name: "arka_arkb_channel_service-1.6.0.jar"
+    jar_name: "ark_ethereum_lite_dual_channel_service-1.0.0.jar"
     app_port: app_port
     expose_port: expose_port
     app_service_name: app_service_name

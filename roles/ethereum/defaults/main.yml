@@ -4,3 +4,6 @@ type: testnet-rinkeby
 
 # Data directory to sync blockchain too
 ethereum_data_directory: /var/ethereum
+
+# Blockchain sync mode ("fast", "full", or "light")
+ethereum_sync_mode: full

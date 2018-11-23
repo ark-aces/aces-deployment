@@ -4,7 +4,7 @@ Description=geth local
 [Service]
 Restart=always
 ExecStart=/usr/bin/geth --dev --rpc --rpcaddr=127.0.0.1 --rpcapi 'web3,eth,personal' --rpccorsdomain="*" \
---datadir={{ ethereum_data_directory }}
+--syncmode "{{ ethereum_sync_mode }}" --datadir={{ ethereum_data_directory }}
 
 [Install]
 WantedBy=multi-user.target

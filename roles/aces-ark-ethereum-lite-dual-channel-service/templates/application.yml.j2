@@ -1,0 +1,343 @@
+server:
+  port: {{ app_port }}
+
+spring:
+  data:
+    jpa.repositories.bootstrap-mode: deferred
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
+    username: "{{database_user}}"
+    password: "{{database_password}}"
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+    properties:
+      hibernate.temp.use_jdbc_metadata_defaults: false
+  mail:
+    host: "change-me"
+    port: 587
+    username: "change-me"
+    password: "change-me"
+    properties:
+      mail.smtp.auth: true
+      mail.startttls.enable: true
+
+# Send notifications on low capacity and transfer completed/failed
+notifications:
+  enabled: false
+  recipientEmailAddress: "change_me"
+  fromEmailAddress: "change_me"
+
+serviceName: "Ark Ethereum Dual Channel Service"
+
+arkNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/ark-network.yml"
+
+serviceArkAccount:
+  address: "{{ service_ark_address }}"
+  passphrase: "{{ service_ark_passphrase }}"
+
+ethereumRpc:
+  url: "{{ ethereum_rcp_url }}"
+
+serviceEthereumAccount:
+  address: "{{ service_ethereum_address }}"
+  passphrase: "{{ service_ethereum_passphrase }}"
+
+arkEthereumChannel:
+  enabled: true
+  urlPrefix: "/arkEthereumChannel"
+
+  serverInfo:
+    name: "{{ ark_ethereum_app_name }}"
+    description: {{ ark_ethereum_app_description }}
+    instructions: |
+      {{ ark_ethereum_instructions | indent(8) }}
+    version: "1.0.0"
+    websiteUrl: "{{ ark_ethereum_app_website }}"
+    inputSchema: >
+      {
+        "type": "object",
+        "properties": {
+          "recipientEthAddress": {
+            "type": "string",
+            "title": "Recipient ETH Address",
+            "description": "Enter recipient ETH address to transfer funds to."
+          },
+           "returnArkAddress": {
+              "type": "string",
+              "title": "Return ARK Address",
+              "description": "Enter return ARK address to send returns to."
+            }
+        },
+        "required": [
+          "recipientEthAddress"
+        ]
+      }
+    outputSchema: >
+      {
+        "type": "object",
+        "properties": {
+          "depositArkAddress": {
+            "type": "string",
+            "title": "Deposit ARK Address",
+            "description": "Send ARK to this address to execute contract."
+          },
+          "recipientEthAddress": {
+            "type": "string",
+            "title": "Recipient ETH Address",
+            "description": "ETH will arrive at this address on contract execution."
+          },
+          "returnArkAddress": {
+            "type": "string",
+            "title": "Return ARK Address",
+            "description": "Returned ARK amounts are sent to this address."
+          },
+          "transfers": {
+            "type": "array",
+            "properties": {
+              "id": {
+                  "type": "string",
+                  "title": "Transfer ID",
+                  "description": "Identifier for transfer"
+              },
+              "status": {
+                  "type": "string",
+                   "title": "Status",
+                   "description": "The status of the transfer"
+              },
+              "createdAt": {
+                "type": "string",
+                "title": "Create Date",
+                "description": "The time the contract was created."
+              },
+              "arkTransactionId": {
+                "type": "string",
+                "title": "Transaction ID (ARK)",
+                "description": "The transaction ID for the ARK contract fulfillment"
+              },
+              "arkAmount": {
+                "type": "string",
+                "title": "Transfer Amount (ARK)",
+                "description": "The amount of ARK to transfer"
+              },
+              "arkToEthRate": {
+                "type": "string",
+                "title": "ETH/ARK Exchange Rate",
+                "description": "Amount of ETH to receive per ARK"
+              },
+              "arkFlatFee": {
+                "type": "string",
+                "title": "Flat Fee (ARK)",
+                "description": "Fixed fee per execution, charged in ARK"
+              },
+              "arkPercentFee": {
+                "type": "string",
+                "title": "Percentage Fee (ARK)",
+                "description": "Percentage fee per execution, charged in ARK"
+              },
+              "arkTotalFee": {
+                "type": "string",
+                "title": "Total Fees (ARK)",
+                "description": "The sum of flat fees and percentage fees, charged in ARK"
+              },
+              "ethSendAmount": {
+                "type": "string",
+                "title": "Receiving Amount (ETH)",
+                "Description": "Total ETH to be received, net of fees"
+              },
+              "ethTransactionId": {
+                "type": "string",
+                "title": "Transaction ID (ETH)",
+                "description": "The transaction ID for the ETH contract fulfillment"
+              },
+              "returnArkTransactionId": {
+                "type": "string",
+                "title": "Return Transaction ID (ARK)",
+                "description": "The transaction ID for the ARK contract return"
+              }
+            }
+          }
+        }
+      }
+    outputSchemaUrlTemplates:
+      -
+        property: "depositArkAddress"
+        urlTemplate: "https://explorer.ark.io/transaction/{value}"
+      -
+        property: "returnArkAddress"
+        urlTemplate: "https://explorer.ark.io/transaction/{value}"
+      -
+        property: "recipientEthAddress"
+        urlTemplate: "https://etherscan.io/address/{value}/"
+      -
+        property: "transfers.arkTransactionId"
+        urlTemplate: "https://explorer.ark.io/transaction/{value}"
+      -
+        property: "transfers.ethTransactionId"
+        urlTemplate: "https://etherscan.io/tx/{value}/"
+      -
+        property: "transfers.returnArkTransactionId"
+        urlTemplate: "https://explorer.ark.io/transaction/{value}"
+
+  capacityUnit: "ETH"
+
+  capacityUpdateIntervalSec: 3600
+
+  arkScanIntervalSec: 10
+  arkScanDepth: 50
+
+  flatFee: {{ ark_ethereum_flat_fee }}
+  flatFeeUnit: "ARK"
+
+  percentFee: {{ ark_ethereum_percent_fee }}
+
+  arkMinConfirmations: 1
+
+  exchangeRate:
+    # CryptoCompare Currency symbol to exchange from
+    fromSymbol: "ARK"
+
+    # CryptoCompare Currency symbol to exchange to
+    toSymbol: "ETH"
+
+    # A rate multiplier (for testing purposes if using non-mainnet coins)
+    multiplier: 1
+
+    # Bypass CryptoCompare API by providing a hard-coded fixedRate
+    #fixedRate: 10.0
+
+  # Capacity threshold at which low capacity notifications will be sent
+  lowCapacityThreshold: "100.00"
+
+
+ethereumArkChannel:
+  enabled: false
+  urlPrefix: "/ethereumArkChannel"
+
+  serverInfo:
+    name: "{{ ethereum_ark_app_name }}"
+    description: {{ ethereum_ark_app_description }}
+    instructions: |
+      {{ ethereum_ark_instructions | indent(8) }}
+    version: "1.0.0"
+    websiteUrl: "{{ ethereum_ark_app_website }}"
+    inputSchema: >
+      {
+        "type": "object",
+        "properties": {
+          "recipientArkAddress": {
+            "type": "string",
+            "title": "Recipient ARK Address",
+            "description": "Enter the ARK address to receive transfers."
+          }
+        },
+        "required": [
+          "recipientArkAddress"
+        ]
+      }
+    outputSchema: >
+      {
+        "type": "object",
+        "properties": {
+          "depositEthAddress": {
+            "type": "string",
+            "title": "Deposit ETH Address",
+            "description": "Send ETH to this address to execute contract."
+          },
+          "recipientArkAddress": {
+            "type": "string",
+            "title": "Recipient ARK Address",
+            "description": "ARK will arrive at this address on contract execution."
+          },
+          "transfers": {
+            "type": "array",
+            "properties": {
+              "id": {
+                "type": "string",
+                "title": "Transfer ID",
+                "description": "Identifier for transfer"
+              },
+              "createdAt": {
+                "type": "string",
+                "title": "Create Date",
+                "description": "The time the contract was created."
+              },
+              "status": {
+                "type": "string",
+                "title": "Status",
+                "description": "The status of the transfer"
+              },
+              "ethTransactionId": {
+                "type": "string",
+                "title": "Transaction ID (ETH)",
+                "description": "The transaction ID for the ETH contract fulfillment"
+              },
+              "ethAmount": {
+                "type": "string",
+                "title": "Transfer Amount (ETH)",
+                "description": "The amount of ETH to transfer"
+              },
+              "ethToArkRate": {
+                "type": "string",
+                "title": "ARK/ETH Exchange Rate",
+                "description": "Amount of ARK to receive per ETH"
+              },
+              "ethFlatFee": {
+                "type": "string",
+                "title": "Flat Fee (ETH)",
+                "description": "Fixed fee per execution, charged in ETH"
+              },
+              "ethPercentFee": {
+                "type": "string",
+                "title": "Percentage Fee (ETH)",
+                "description": "Percentage fee per execution, charged in ETH"
+              },
+              "ethTotalFee": {
+                "type": "string",
+                "title": "Total Fees (ETH)",
+                "description": "The sum of flat fees and percentage fees, charged in ETH"
+              },
+              "arkTransactionId": {
+                "type": "string",
+                "title": "Transaction ID (ARK)",
+                "description": "The transaction ID for the ARK contract fulfillment"
+              },
+              "arkSendAmount": {
+                "type": "string",
+                "title": "Receiving Amount (ARK)",
+                "Description": "Total ARK to be received, net of fees"
+              }
+            }
+          }
+        }
+      }
+
+  scanIntervalSec: 10
+  maxScanBlockDepth: 4
+  minConfirmations: 1
+
+  capacityUnit: "ARK"
+
+  capacityUpdateIntervalSec: 3600
+
+  flatFee: {{ ethereum_ark_flat_fee }}
+  flatFeeUnit: "ETH"
+
+  percentFee: {{ ethereum_ark_percent_fee }}
+
+  exchangeRate:
+    # CryptoCompare Currency symbol to exchange from
+    fromSymbol: "ETH"
+
+    # CryptoCompare Currency symbol to exchange to
+    toSymbol: "ARK"
+
+    # A rate multiplier (for testing purposes if using non-mainnet coins)
+    multiplier: 1
+
+    # Bypass CryptoCompare API by providing a hard-coded fixedRate
+    #fixedRate: 10.0
+
+  # Capacity threshold at which low capacity notifications will be sent
+  lowCapacityThreshold: "100.00"

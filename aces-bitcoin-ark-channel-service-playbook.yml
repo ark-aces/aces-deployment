@@ -47,5 +47,5 @@
       flat_fee_btc: 0
       percent_fee: 0
       instructions: >
-        After this contract is executed, any BTC sent to depositArkAddress will be exchanged for 
-        ARK and sent directly to the given recipientBtcAddress with no additional fees.
+        After this contract is executed, any BTC sent to depositBtcAddress will be exchanged for
+        ARK and sent directly to the given recipientArkAddress with no additional fees.

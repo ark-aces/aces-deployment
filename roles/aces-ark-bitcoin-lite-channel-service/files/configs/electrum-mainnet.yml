@@ -1,0 +1,43 @@
+network: mainnet
+
+# Seed peers from https://1209k.com/bitcoin-eye/ele.php?chain=btc (TCP only)
+seedPeers:
+-
+  host: 'erbium1.sytes.net'
+  port: 50001
+-
+  host: 'ecdsa.net'
+  port: 50001
+-
+  host: 'VPS.hsmiths.com'
+  port: 50001
+-
+  host: 'electrum.be'
+  port: 50001
+-
+  host: 'helicarrier.bauerj.eu'
+  port: 50001
+-
+  host: 'elex01.blackpole.online'
+  port: 50001
+-
+  host: 'electrumx.not.fyi'
+  port: 50001
+-
+  host: 'node.xbt.eu'
+  port: 50001
+-
+  host: 'kirsche.emzy.de'
+  port: 50001
+-
+  host: 'us11.einfachmalnettsein.de'
+  port: 50001
+-
+  host: 'Electrum.hsmiths.com'
+  port: 8080
+-
+  host: 'electrum3.hachre.de'
+  port: 50001
+-
+  host: 'btc.smsys.me'
+  port: 110

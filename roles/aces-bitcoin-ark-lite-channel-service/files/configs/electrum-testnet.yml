@@ -1,0 +1,10 @@
+network: testnet
+
+# Seed peers from https://1209k.com/bitcoin-eye/ele.php?chain=tbtc  (TCP only)
+seedPeers:
+-
+  host: 'testnet.hsmiths.com'
+  port: 53011
+-
+  host: 'testnet.qtornado.com'
+  port: 51001

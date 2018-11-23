@@ -1,0 +1,52 @@
+---
+- import_playbook: setup-playbook.yml
+- hosts: aces-node
+  become: true
+  roles:
+    - role: aces-common
+
+    - role: ethereum
+      ethereum_data_directory: /var/ethereum
+      ethereum_sync_mode: light
+      type: testnet-rinkeby
+
+    - role: aces-ark-ethereum-lite-dual-channel-service
+      app_service_name: aces-ark-ethereum-lite-dual-channel-service
+      app_port: 9190
+      expose_port: false
+      use_local_database: true
+      database_host: localhost
+      database_port: 5432
+      database_name: aces_ark_ethereum_lite_dual_channel_service_db
+      database_user: aces_ark_ethereum_lite_dual_channel_service_user
+      database_password: change_me
+      domain_name: ark-ethereum-lite-dual-channel-service.example.com
+      use_letsencrypt: false
+      letsencrypt_email: change_me
+
+      ark_network_config_file: configs/ark-networks/ark-mainnet.yml
+
+      ethereum_rcp_url: http://127.0.0.1:8545
+      service_ethereum_address: change_me
+      service_ethereum_passphrase: change_me
+
+      service_ark_address: change_me
+      service_ark_passphrase: change_me
+
+      ark_ethereum_app_name: ACES ARK-ETH Channel Service
+      ark_ethereum_app_description: ACES ARK-ETH Channel Service
+      ark_ethereum_app_website: https://arkaces.com
+      ark_ethereum_instructions: >
+        After this contract is executed, any ARK sent to deposit address will be exchanged for
+        ETH and sent directly to the given recipient address.
+      ark_ethereum_flat_fee: 0
+      ark_ethereum_percent_fee: 0
+
+      ethereum_ark_app_name: ACES ETH-ARK Channel Service
+      ethereum_ark_app_description: ACES ETH-ARK Channel Service
+      ethereum_ark_app_website: https://arkaces.com
+      ethereum_ark_instructions: >
+        After this contract is executed, any ETH sent to deposit address will be exchanged for
+        ARK and sent directly to the given recipient address.
+      ethereum_ark_flat_fee: 0
+      ethereum_ark_percent_fee: 0

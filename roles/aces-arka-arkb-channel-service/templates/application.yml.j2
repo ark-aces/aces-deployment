@@ -1,10 +1,32 @@
+server:
+  port: {{ app_port }}
+
+spring:
+  datasource:
+    platform: "postgres"
+    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
+    username: "{{database_user}}"
+    password: "{{database_password}}"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: "validate"
+
+  mail:
+    host: "change_me"
+    port: 587
+    username: "change_me"
+    password: "change_me"
+    properties:
+      mail.smtp.auth: true
+      mail.startttls.enable: true
+
 serverInfo:
   name: "{{ app_name }}"
   description: {{ app_description }}
   instructions: {{ instructions }}
-  version: "1.1.0"
+  version: "1.0.0"
   websiteUrl: "{{ app_website }}"
-  arkbPerArka: "{{ arka_per_arkb_rate }}"
   inputSchema: >
     {
       "type": "object",
@@ -24,52 +46,100 @@ serverInfo:
       "type": "object",
       "properties": {
         "depositArkaAddress": {
-          "type": "string"
+          "type": "string",
+          "title": "Deposit {{ arka_unit }} Address",
+          "description": "Send {{ arka_unit }} to this address to execute contract."
         },
         "recipientArkbAddress": {
-          "type": "string"
+          "type": "string",
+          "title": "Recipient {{ arkb_unit }} Address",
+          "description": "{{ arkb_unit }} will arrive at this address on contract execution."
         },
         "transfers": {
           "type": "array",
+          "title": "Transfers",
+          "description": "List of transfers",
           "properties": {
-            "arkAmount": {
-              "type": "string"
+            "id": {
+              "type": "string",
+              "title": "Transfer ID",
+              "description": "Identifier for transfer"
+            },
+            "status": {
+              "type": "string",
+              "title": "Status",
+              "description": "The status of the transfer"
+            },
+            "returnArkaAddress": {
+              "type": "string",
+              "title": "Return Address ({{ arka_unit }})",
+              "description": "The {{ arka_unit }} address for returns of failed executions."
+            },
+            "arkaTransactionId": {
+              "type": "string",
+              "title": "Transaction ID ({{ arka_unit }})",
+              "description": "The transaction ID for the {{ arka_unit }} contract fulfillment"
+            },
+            "arkaAmount": {
+              "type": "string",
+              "title": "Transfer Amount ({{ arka_unit }})",
+              "description": "The amount of {{ arka_unit }} to transfer"
             },
             "arkbPerArka": {
-              "type": "string"
+              "type": "string",
+              "title": "{{ arkb_unit }}/{{ arka_unit }} Exchange Rate",
+              "description": "Amount of {{ arkb_unit }} to receive per ARKA"
             },
             "arkaFlatFee": {
-              "type": "string"
+              "type": "string",
+              "title": "Flat Fee ({{ arka_unit }})",
+              "description": "Fixed fee per execution, charged in {{ arka_unit }}"
             },
             "arkaPercentFee": {
-              "type": "string"
+              "type": "string",
+              "title": "Percentage Fee ({{ arka_unit }})",
+              "description": "Percentage fee per execution, charged in {{ arka_unit }}"
             },
             "arkaTotalFee": {
-              "type": "string"
+              "type": "string",
+              "title": "Total Fees ({{ arka_unit }})",
+              "description": "The sum of flat fees and percentage fees, charged in {{ arka_unit }}"
             },
             "arkbSendAmount": {
-              "type": "string"
+              "type": "string",
+              "title": "Receiving Amount ({{ arkb_unit }})",
+              "Description": "Total {{ arkb_unit }} to be received, net of fees"
             },
             "arkbTransactionId": {
-              "type": "string"
+              "type": "string",
+              "title": "Transaction ID ({{ arkb_unit }})",
+              "description": "The transaction ID for the {{ arkb_unit }} contract fulfillment"
             },
             "createdAt": {
-              "type": "string"
+              "type": "string",
+              "title": "Create Date",
+              "description": "The time the contract was created."
             }
           }
         }
       }
     }
-
-spring:
-  datasource:
-    platform: "postgres"
-    url: "jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{database_name}}"
-    username: "{{database_user}}"
-    password: "{{database_password}}"
-  jpa:
-    hibernate:
-      ddl-auto: "validate"
+  outputSchemaUrlTemplates:
+    -
+      property: "depositArkaAddress"
+      urlTemplate: "{{ arka_address_url_template }}"
+    -
+      property: "recipientArkbAddress"
+      urlTemplate: "{{ arkb_address_url_template }}"
+    -
+      property: "returnArkaAddress"
+      urlTemplate: "{{ arka_address_url_template }}"
+    -
+      property: "transfers.arkaTransactionId"
+      urlTemplate: "{{ arka_transaction_url_template }}"
+    -
+      property: "transfers.arkbTransactionId"
+      urlTemplate: "{{ arkb_transaction_url_template }}"
 
 arkaNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/arka-network.yml"
 arkbNetworkConfigPath: "file:/etc/opt/{{ app_service_name }}/arkb-network.yml"
@@ -83,9 +153,6 @@ fees:
 
 arkbPerArka: {{ arka_per_arkb_rate }}
 
-server:
-  port: {{ app_port }}
-
 arkaListener:
   url: {{ arka_listener_url }}
 
@@ -94,3 +161,19 @@ arkaEventCallbackUrl: http://{{ domain_name }}:{{ app_port }}/arkaEvents
 serviceArkbAccount:
   address: {{ service_arkb_address }}
   passphrase: {{ service_arkb_passphrase }}
+
+# Arka sweep settings for collecting deposits into a single service account
+arkaSweep:
+  enabled: false
+  arkaAddress: change_me
+  runIntervalSec: 86400
+
+
+# Send notifications on low capacity and transfer completed/failed
+notifications:
+  enabled: false
+  recipientEmailAddress: "change_me"
+  fromEmailAddress: "change_me"
+
+# Capacity threshold at which low capacity notifications will be sent
+lowCapacityThreshold: "100.00"
